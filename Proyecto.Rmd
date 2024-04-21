@@ -1,0 +1,109 @@
+---
+title: "DB_Estadistica"
+author: "Anthony Jimenez"
+date: "2024-04-04"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+```{r}
+#Librerias
+
+install.packages("zoo")
+library(zoo)
+install.packages("dplyr")
+library(dplyr)
+library(readxl)
+```
+
+
+```{r}
+# Se importa el archivo de excel el cual contiene el dataframe
+# y se guarda en la variable World_Data
+
+directorio <- getwd()
+World_Data_Directorio <- file.path(directorio, "World_Data.xlsx")
+World_Data <- read_excel(World_Data_Directorio)
+World_Data_2 <- World_Data
+```
+
+```{r}
+# Se obtiene un summary de las diferentes variables que componen
+# el set de datos.
+
+summary(World_Data)
+```
+```{r}
+# Se decide reemplazar los valores N/A presentes en distintas entradas por el
+# promedio de la variable.
+
+promedios <- sapply(World_Data_2, function(x) if(is.numeric(x)) mean(x, na.rm = TRUE) else NA)
+for (col in names(World_Data_2)) {
+  World_Data_2[[col]][is.na(World_Data_2[[col]])] <- promedios[[col]]
+}
+```
+
+```{r}
+# Se van a contar los N/A presentedes en la base de datos para asegurar
+# de que no haya ninguno
+
+conteo_NA <- colSums(is.na(World_Data_2))
+print(conteo_NA)
+```
+
+```{r}
+# Se carga la base de datos con los indices de felicidad y las categorias mediante las cuales se mide este.
+
+Tabla_Felicidad_Directorio <- file.path(directorio, "DataForTable2.1 (1).xls")
+Tabla_Felicidad <- read_excel(Tabla_Felicidad_Directorio)
+```
+
+```{r}
+# Los valores que presenta la tabla de World_Data utiliza promedios que van desde # el rango del 2015 al 2018, por lo que se procede a trabajar Tabla_Felicidad, se # eliminan los años que no corresponden al promedio que se desea calcular. Ademas # se calcula el promedio y se genera una nueva tabla unicamente con los promedios # de las distintas variables
+
+Tabla_Felicidad_Reducida <- Tabla_Felicidad[Tabla_Felicidad$year >= 2015 & Tabla_Felicidad$year <= 2018, ]
+
+Tabla_Felicidad_Promedio <- Tabla_Felicidad_Reducida %>%
+  group_by(`Country name`) %>%
+  summarise(across(where(is.numeric), mean, na.rm = TRUE))
+
+Tabla_Felicidad_Promedio <- Tabla_Felicidad_Promedio %>%
+  select(-year)
+```
+
+```{r}
+# Se eliminan de World_Data_2 las variables "social_support", "freedom" y 
+# "generosity", esto con el fin de agregar los promedios obtenidos de 
+# Tabla_Felicidad_Reducida.
+
+World_Data_2 <- World_Data_2 %>%
+  select(-social_support, -freedom, -generosity)
+```
+
+```{r}
+# Se unen los dos df, realizando una comparacion entre country y Country name,
+# ademas se omiten los paises que no cuentan con una entrada en 
+# Tabla_Felicidad_Promedio
+
+World_Data_3 <- merge(World_Data_2, Tabla_Felicidad_Promedio, by.x = "country", by.y = "Country name")
+```
+
+```{r}
+# Se decide reemplazar los valores N/A presentes en distintas entradas por el
+# promedio de la variable.
+# Se van a contar los N/A presentedes en la base de datos para asegurar
+# de que no haya ninguno, además se va a realizar un summary de esta
+
+promedios <- sapply(World_Data_3, function(x) if(is.numeric(x)) mean(x, na.rm = TRUE) else NA)
+for (col in names(World_Data_3)) {
+  World_Data_3[[col]][is.na(World_Data_3[[col]])] <- promedios[[col]]
+}
+
+conteo_NA <- colSums(is.na(World_Data_3))
+print(conteo_NA)
+summary(World_Data_3)
+```
+
