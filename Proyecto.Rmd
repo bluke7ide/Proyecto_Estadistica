@@ -17,6 +17,14 @@ library(zoo)
 install.packages("dplyr")
 library(dplyr)
 library(readxl)
+install.packages("gtsummary")
+library(gtsummary)
+install.packages("pastecs")
+library(pastecs)
+install.packages("summarytools")
+library(summarytools)
+install.packages("ggplot2")
+library(ggplot2)
 ```
 
 
@@ -44,6 +52,8 @@ promedios <- sapply(World_Data_2, function(x) if(is.numeric(x)) mean(x, na.rm = 
 for (col in names(World_Data_2)) {
   World_Data_2[[col]][is.na(World_Data_2[[col]])] <- promedios[[col]]
 }
+
+# La existencia de valores N/A es debido a que no todos los paises reportan todos los años a las tres entidades de las cuales se obtienen los datos, esto debido a las distintas dinamicas geo-socio-politicas que se desarrollan en las distintas divisiones geograficas del mundo, asi como la calidad de las relaciones que existe entre los paises, o situaciones de guerra o crisis.
 ```
 
 ```{r}
@@ -95,15 +105,80 @@ World_Data_3 <- merge(World_Data_2, Tabla_Felicidad_Promedio, by.x = "country", 
 # Se decide reemplazar los valores N/A presentes en distintas entradas por el
 # promedio de la variable.
 # Se van a contar los N/A presentedes en la base de datos para asegurar
-# de que no haya ninguno, además se va a realizar un summary de esta
+# de que no haya ninguno, además se va a realizar un summary de esta.
+# Como se explico de forma previa la existencia de valores N/A es debido a que no todos los paises reportan todos los años a las tres entidades de las cuales se obtienen los datos, esto debido a las distintas dinamicas geo-socio-politicas que se desarrollan en las distintas divisiones geograficas del mundo, asi como la calidad de las relaciones que existe entre los paises, o situaciones de guerra o crisis.
 
 promedios <- sapply(World_Data_3, function(x) if(is.numeric(x)) mean(x, na.rm = TRUE) else NA)
 for (col in names(World_Data_3)) {
   World_Data_3[[col]][is.na(World_Data_3[[col]])] <- promedios[[col]]
 }
-
 conteo_NA <- colSums(is.na(World_Data_3))
 print(conteo_NA)
 summary(World_Data_3)
 ```
+
+```{r}
+# En la estructura que presenta "World_Data_3" se puede observar que cada
+# variable va en una columna, no existe una combinación de distintas variables
+# en la misma columna.
+# A su vez cada observación es unica y sus valores estan distribuidos a lo largo
+# de una unica fila
+# Existe un identificador o key claro para cada una de las entradas, en este caso corresponde a la columna "country" que indica el país.
+# Además queremos que todas las variables manejen valores numericos, asi que se va a reemplazar los valores de "income_class" por su factor, para de esta forma tener unicamente variables numericas.
+
+# Ahora lo que vamos a realizar es un analisis descriptivo completo de la tabla, la forma mas sencilla de empezar este proceso es mediante la funcion "summary()", la cual me permite obtener distintos estadísticos de la tabla en cuestión.
+# Se procede a utilizar dicha funcion.
+
+World_Data_3 <- World_Data_3 %>%
+  mutate(income_class = case_when(
+    income_class == "Low income" ~ 0,
+    income_class == "Lower middle income" ~ 1,
+    income_class == "Upper middle income" ~ 2,
+    income_class == "High income" ~ 3
+  ))
+
+str(World_Data_3)
+summary(World_Data_3)
+colnames(World_Data_3) <- tolower(gsub(" ", "_", colnames(World_Data_3)))
+
+
+# Además vamos a eliminar la columna de país, ya que queremos conseguir una correlación entre las distintas variables, esta no aporta utilidad en una escala mayor.
+
+Data_trabajar <- subset(World_Data_3, select = -country)
+
+
+```
+
+
+
+```{r}
+# Con la data estructurada de la forma adecuada, podemos empezamos a buscar la relación existente entre los distintos marcadores con respecto a nuestro variable objetivo, en este caso life_ladder
+
+
+
+# De la matriz de covarianza, podemos encontrar que tanta relación existe entre las distintas variables que forman la tabla, de forma que va a ser mas sencillo visualizar en que variables concentrar el estudio.
+# Asi como la de correlacion, ya que al estar normalizada con valores que van desde -1 hasta 1, resulta mas sencilla observar las relaciones existentes
+
+Tabla_covarianza = cov(Data_trabajar)
+Tabla_correlacion = cor(Data_trabajar)
+
+# Además se van a conseguir varios marcadores estadisticos con el fin de tener un entendimiento más completo de los datos y como estos se comportan de forma individual
+Tabla_stats = stat.desc(Data_trabajar)
+Tabla_descripcion = descr(Data_trabajar)
+Df_resumen = dfSummary(Data_trabajar)
+```
+```{r}
+variables <- setdiff(names(Data_trabajar), "life_ladder")
+for(var in variables) {
+  p <- ggplot(Data_trabajar, aes_string(x = var, y = "life_ladder")) +
+    geom_point() +
+    labs(x = var, y = "Life Ladder",
+         title = paste("Gráfico de", var, "contra Life Ladder"))
+  
+  
+  ggsave(filename = paste0("C:/Users/Anthony/Desktop/", var, "_vs_life_ladder.png"), plot = p)
+}
+
+```
+
 
