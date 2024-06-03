@@ -1,0 +1,49 @@
+% Habilita 3 niveles de profundidad
+\setcounter{tocdepth}{3}
+\setcounter{secnumdepth}{3}
+
+% Comando para eliminar 'Capítulo N' de \chapter{}
+\titleformat{\chapter}[display]{\normalfont\bfseries}{}{0pt}{\Huge}
+\newpagestyle{mystyle}
+{\sethead[\thepage][][\chaptertitle]{}{}{\thepage}}
+\pagestyle{mystyle}
+
+% Comando para agregar ambientes de teorema
+\newtheorem*{theorem}{Teorema}
+
+% Definir el color azul
+\definecolor{myblue}{RGB}{54, 95, 145}
+
+\newtcolorbox{mybox}[1]{colback=white, colframe=myblue, fonttitle=\bfseries, title=#1}
+
+% --- set footer and header ---
+\pagestyle{fancy}
+\fancyhf{}
+
+\setlength{\parindent}{2em}
+\title{Proyecto Estadística I} % to reference as \title, dont use \maketitle
+\makeatletter\let\Title\@title\makeatother
+
+\lstset{language=Matlab,
+style=Matlab-editor,
+basicstyle=\normalsize\mlttfamily,
+numbers=left,
+numberstyle={\scriptsize\color{black}},	% size of the numbers
+numbersep=0.5cm											
+}
+
+\newlist{steps}{enumerate}{1}
+\setlist[steps, 1]{leftmargin=1.5cm,label = Step \arabic*:}
+
+\renewcommand{\rmdefault}{ptm}
+\renewcommand{\headrulewidth}{1pt}
+\renewcommand{\footrulewidth}{1pt}
+\lhead{\Title}
+\rhead{\nouppercase{\rightmark}}
+\lhead{\Title}
+\setlength\headheight{16pt}
+\setlength{\footskip}{50pt}
+\lhead{\Title} %rightH title
+\cfoot{\thepage}
+
+% --- End of page settings ---
