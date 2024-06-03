@@ -50,14 +50,17 @@ World_Data_2 <- World_Data
 Tabla_Felicidad <- read_excel("data/DataForTable2.1 (1).xls")
 ```
 
+
+# Análisis descriptivo
 ```{r}
 # Se obtiene un summary de la base de datos principal
 summary(World_Data)
 ```
+## Imputación NA
 
+La existencia de valores N/A es debido a que no todos los paises reportan todos los años a las tres entidades de las cuales se obtienen los datos, esto debido a las distintas dinamicas geo-socio-politicas que se desarrollan en las distintas divisiones geograficas del mundo, asi como la calidad de las relaciones que existe entre los paises, o situaciones de guerra o crisis.
 ```{r}
-# Se decide reemplazar los valores N/A presentes en distintas entradas por el
-# promedio de la variable.
+# Se decide reemplazar por el promedio de la variable.
 
 promedios <- sapply(World_Data_2,
                     function(x) if(is.numeric(x)) mean(x, na.rm = TRUE) else NA)
@@ -65,20 +68,19 @@ for (col in names(World_Data_2)) {
   World_Data_2[[col]][is.na(World_Data_2[[col]])] <- promedios[[col]]
 }
 
-# La existencia de valores N/A es debido a que no todos los paises reportan todos los años a las tres entidades de las cuales se obtienen los datos, esto debido a las distintas dinamicas geo-socio-politicas que se desarrollan en las distintas divisiones geograficas del mundo, asi como la calidad de las relaciones que existe entre los paises, o situaciones de guerra o crisis.
+ 
 ```
 
 ```{r}
-# Se van a contar los N/A presentedes en la base de datos para asegurar
-# de que no haya ninguno
+# Se cuentan los NA restantes
 colSums(is.na(World_Data_2))
 ```
 
+## Acotación de la tabla
 
+Los valores que presenta la tabla de World_Data utiliza promedios que van desde el rango del 2015 al 2018, por lo que se procede a trabajar Tabla_Felicidad, se eliminan los años que no corresponden al promedio que se desea calcular. Ademas, se calcula el promedio y se genera una nueva tabla unicamente con los promedios de las distintas variables
 
 ```{r}
-# Los valores que presenta la tabla de World_Data utiliza promedios que van desde # el rango del 2015 al 2018, por lo que se procede a trabajar Tabla_Felicidad, se # eliminan los años que no corresponden al promedio que se desea calcular. Ademas # se calcula el promedio y se genera una nueva tabla unicamente con los promedios # de las distintas variables
-
 Tabla_Felicidad_Reducida <- Tabla_Felicidad[
   Tabla_Felicidad$year >= 2015 & Tabla_Felicidad$year <= 2018, 
   ]
