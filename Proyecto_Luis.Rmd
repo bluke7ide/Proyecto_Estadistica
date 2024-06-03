@@ -1,0 +1,359 @@
+---
+title: "Proyecto Estadistica Actuarial I"
+author: 
+  - Estudiantes
+  - Luis Fernando Amey Apuy - C20470
+  - Anthony Jiménez Navarro - C24067
+  - Javier Hernández Navarro - C13674
+  - Erick Venegas Espinoza - C09319
+
+date: "`r Sys.Date()`"
+output: 
+  rmdformats::downcute:
+    default_style: "dark"
+    downcute_theme: "chaos"
+---
+
+# Librerias
+```{r}
+# install.packages("zoo")
+# install.packages("dplyr")
+# install.packages("gtsummary")
+# install.packages("pastecs")
+# install.packages("summarytools")
+# install.packages("ggplot2")
+# install.packages("corrplot")
+# install.packages("ggpubr")
+
+library(ggpubr)
+library(zoo)
+library(dplyr)
+library(readxl)
+library(gtsummary)
+library(pastecs)
+library(summarytools)
+library(ggplot2)
+library(corrplot)
+```
+
+# Importación de datos
+```{r, warning=FALSE}
+setwd("..")
+
+# Se carga la base de datos principal
+World_Data <- read_excel("data/World_Data.xlsx")
+
+# Se clona
+World_Data_2 <- World_Data
+
+# Se carga la base de datos con los indices de felicidad
+Tabla_Felicidad <- read_excel("data/DataForTable2.1 (1).xls")
+```
+
+
+# Análisis descriptivo
+```{r}
+# Se obtiene un summary de la base de datos principal
+summary(World_Data)
+```
+## Imputación NA
+
+La existencia de valores N/A es debido a que no todos los paises reportan todos los años a las tres entidades de las cuales se obtienen los datos, esto debido a las distintas dinamicas geo-socio-politicas que se desarrollan en las distintas divisiones geograficas del mundo, asi como la calidad de las relaciones que existe entre los paises, o situaciones de guerra o crisis.
+```{r}
+# Se decide reemplazar por el promedio de la variable.
+
+promedios <- sapply(World_Data_2,
+                    function(x) if(is.numeric(x)) mean(x, na.rm = TRUE) else NA)
+for (col in names(World_Data_2)) {
+  World_Data_2[[col]][is.na(World_Data_2[[col]])] <- promedios[[col]]
+}
+
+ 
+```
+
+```{r}
+# Se cuentan los NA restantes
+colSums(is.na(World_Data_2))
+```
+
+## Acotación de la tabla
+
+Los valores que presenta la tabla de World_Data utiliza promedios que van desde el rango del 2015 al 2018, por lo que se procede a trabajar Tabla_Felicidad, se eliminan los años que no corresponden al promedio que se desea calcular. Ademas, se calcula el promedio y se genera una nueva tabla unicamente con los promedios de las distintas variables
+
+```{r}
+Tabla_Felicidad_Reducida <- Tabla_Felicidad[
+  Tabla_Felicidad$year >= 2015 & Tabla_Felicidad$year <= 2018, 
+  ]
+
+Tabla_Felicidad_Promedio <- Tabla_Felicidad_Reducida %>%
+  group_by(`Country name`) %>%
+  summarise(across(where(is.numeric), mean, na.rm = TRUE))
+
+Tabla_Felicidad_Promedio <- Tabla_Felicidad_Promedio %>%
+  select(-year)
+```
+
+```{r}
+# Se eliminan de World_Data_2 las variables "social_support", "freedom" y 
+# "generosity", esto con el fin de agregar los promedios obtenidos de 
+# Tabla_Felicidad_Reducida.
+
+World_Data_2 <- World_Data_2 %>%
+  select(-social_support, -freedom, -generosity)
+```
+
+```{r}
+# Se unen los dos df, realizando una comparacion entre country y Country name,
+# ademas se omiten los paises que no cuentan con una entrada en 
+# Tabla_Felicidad_Promedio
+
+World_Data_3 <- merge(World_Data_2,
+                      Tabla_Felicidad_Promedio,
+                      by.x = "country",
+                      by.y = "Country name")
+```
+
+```{r}
+# Se decide reemplazar los valores N/A presentes en distintas entradas por el
+# promedio de la variable.
+# Se van a contar los N/A presentedes en la base de datos para asegurar
+# de que no haya ninguno, además se va a realizar un summary de esta.
+# Como se explico de forma previa la existencia de valores N/A es debido a que no todos los paises reportan todos los años a las tres entidades de las cuales se obtienen los datos, esto debido a las distintas dinamicas geo-socio-politicas que se desarrollan en las distintas divisiones geograficas del mundo, asi como la calidad de las relaciones que existe entre los paises, o situaciones de guerra o crisis.
+
+promedios <- sapply(World_Data_3,
+                    function(x) if(is.numeric(x)) mean(x, na.rm = TRUE) else NA)
+for (col in names(World_Data_3)) {
+  World_Data_3[[col]][is.na(World_Data_3[[col]])] <- promedios[[col]]
+}
+conteo_NA <- colSums(is.na(World_Data_3))
+World_Data_3_Resumen = descr(World_Data_3)
+#write.xlsx(World_Data_3_Resumen, "Estadisticas_Descriptivas.xlsx", row.names = TRUE)
+```
+
+
+```{r}
+# En la estructura que presenta "World_Data_3" se puede observar que cada
+# variable va en una columna, no existe una combinación de distintas variables
+# en la misma columna.
+# A su vez cada observación es unica y sus valores estan distribuidos a lo largo
+# de una unica fila
+# Existe un identificador o key claro para cada una de las entradas, en este caso corresponde a la columna "country" que indica el país.
+# Además queremos que todas las variables manejen valores numericos, asi que se va a reemplazar los valores de "income_class" por su factor, para de esta forma tener unicamente variables numericas.
+
+# Ahora lo que vamos a realizar es un analisis descriptivo completo de la tabla, la forma mas sencilla de empezar este proceso es mediante la funcion "summary()", la cual me permite obtener distintos estadísticos de la tabla en cuestión.
+# Se procede a utilizar dicha funcion.
+
+World_Data_3 <- World_Data_3 %>%
+  mutate(income_class = case_when(
+    income_class == "Low income" ~ 0,
+    income_class == "Lower middle income" ~ 1,
+    income_class == "Upper middle income" ~ 2,
+    income_class == "High income" ~ 3
+  ))
+
+str(World_Data_3)
+```
+
+
+```{r}
+summary(World_Data_3)
+colnames(World_Data_3) <- tolower(gsub(" ", "_", colnames(World_Data_3)))
+```
+
+
+```{r}
+# Además vamos a eliminar la columna de país, ya que queremos conseguir una correlación entre las distintas variables, esta no aporta utilidad en una escala mayor.
+
+Data_trabajar <- subset(World_Data_3, select = -country)
+```
+
+
+
+```{r}
+# Con la data estructurada de la forma adecuada, podemos empezamos a buscar la relación existente entre los distintos marcadores con respecto a nuestro variable objetivo, en este caso life_ladder
+
+
+
+# De la matriz de covarianza, podemos encontrar que tanta relación existe entre las distintas variables que forman la tabla, de forma que va a ser mas sencillo visualizar en que variables concentrar el estudio.
+# Asi como la de correlacion, ya que al estar normalizada con valores que van desde -1 hasta 1, resulta mas sencilla observar las relaciones existentes
+
+Tabla_covarianza = as.data.frame(cov(Data_trabajar))
+Tabla_correlacion = as.data.frame(cor(Data_trabajar))
+Correlacion = cor(Data_trabajar)
+
+#write.xlsx(Tabla_covarianza, "Covarianza.xlsx", row.names = TRUE)
+#write.xlsx(Tabla_correlacion, "Correlacion.xlsx", row.names = TRUE)
+
+corrplot(Correlacion, method = "circle", tl.cex = 0.4)
+
+
+# Además se van a conseguir varios marcadores estadisticos con el fin de tener un entendimiento más completo de los datos y como estos se comportan de forma individual
+Tabla_stats = stat.desc(Data_trabajar)
+Tabla_descripcion = descr(Data_trabajar)
+Df_resumen = dfSummary(Data_trabajar)
+
+```
+
+
+
+```{r}
+# Se realiza un plot de correlaciones, ya que las dimensiones de LaTex limitan la posibilidad de utilizar la matriz numerica.
+
+# png("correlaciones.png", width = 800, height = 800) 
+
+corrplot(Correlacion, method = "circle", tl.cex = 1)
+
+# Cerrar el dispositivo gráfico y guardar la imagen
+dev.off()
+
+
+```
+
+```{r}
+variables <- setdiff(names(Data_trabajar), "life_ladder")
+for(var in variables) {
+  p <- ggplot(Data_trabajar, aes_string(x = var, y = "life_ladder")) +
+    geom_point() +
+    labs(x = var, y = "Life Ladder",
+         title = paste("Gráfico de", var, "contra Life Ladder"))
+  print(p)
+  #ggsave(filename = paste0("C:/Users/Anthony/Desktop/", var, "_vs_life_ladder.png"), plot = p)
+}
+
+```
+
+
+```{r}
+# Ahora que tenemos el plot de correlacion, seleccionamos las variables relevantes para el estudio, asi que creamos un nuevo data frame unicamente con las variables importantes.
+
+Data_relevante = Data_trabajar[, c("life_ladder", "electricity_access", "water_access", "income_class", "cpi", "log_gdp_per_capita")]
+
+
+# Assuming Data_trabajar is your dataframe
+
+# Summary statistics for life_ladder
+life_ladder_summary <- summary(Data_trabajar$life_ladder)
+
+# Create a table
+life_ladder_table <- data.frame(
+  Measure = c("Minimum", "1st Quartile", "Median", "Mean", "3rd Quartile", "Maximum", "Standard Deviation"),
+  Value = c(life_ladder_summary[1], quantile(Data_trabajar$life_ladder, 0.25), 
+            median(Data_trabajar$life_ladder), mean(Data_trabajar$life_ladder), 
+            quantile(Data_trabajar$life_ladder, 0.75), life_ladder_summary[6], sd(Data_trabajar$life_ladder))
+)
+
+# Print the table
+print(life_ladder_table)
+
+
+# Assuming Data_trabajar is your dataframe
+
+# Summary statistics for log_gdp_per_capita
+log_gdp_summary <- summary(Data_trabajar$log_gdp_per_capita)
+
+# Create a table
+log_gdp_table <- data.frame(
+  Measure = c("Minimum", "1st Quartile", "Median", "Mean", "3rd Quartile", "Maximum", "Standard Deviation"),
+  Value = c(log_gdp_summary[1], quantile(Data_trabajar$log_gdp_per_capita, 0.25), 
+            median(Data_trabajar$log_gdp_per_capita), mean(Data_trabajar$log_gdp_per_capita), 
+            quantile(Data_trabajar$log_gdp_per_capita, 0.75), log_gdp_summary[6], sd(Data_trabajar$log_gdp_per_capita))
+)
+
+print(log_gdp_table)
+
+Descripcion_relevante = as.data.frame(descr(Data_relevante))
+#write.xlsx(life_ladder_table, "life_ladder_table.xlsx", row.names = TRUE)
+#write.xlsx(log_gdp_table, "log_gdp_table.xlsx", row.names = TRUE)
+#write.xlsx(Descripcion_relevante, "Descripcion_relevante.xlsx", row.names = TRUE)
+
+
+```
+
+
+```{r}
+# Se van a desarrollar graficos con el fin de estudiar el comportamiento de los datos selectos
+
+plot_a = ggplot(Data_relevante, aes(x = life_ladder)) +
+  geom_histogram(binwidth = 0.01)
+
+plot_b = ggplot(Data_relevante, aes(x = log_gdp_per_capita , y =life_ladder)) +
+  geom_point()
+
+plot_c = ggplot(Data_relevante, aes(x = income_class , y =life_ladder)) +
+  geom_point()
+# ggsave("life_variacion.png", plot = plot_a)
+# ggsave("gdp_life.png", plot = plot_b)
+# ggsave("income_life.png", plot = plot_c)
+
+```
+
+
+
+```{r}
+
+# Obtenemos la correlación utilizando distintos metodos, en este caso Pearson, Kendall y Spearman, vamos a concentrarnos en Pearson, pero los otros metodos nos permite tener una idea mas clara del comportamiento de los datos.
+cor(Data_relevante$log_gdp_per_capita, Data_relevante$life_ladder, method = c("pearson", "kendall", "spearman"))
+cor.test(Data_relevante$log_gdp_per_capita, Data_relevante$life_ladder, method=c("pearson", "kendall", "spearman"))
+
+# Gráfico de dispersoón de la correlación
+ggscatter(Data_relevante, x = "log_gdp_per_capita", y = "life_ladder", 
+          add = "reg.line", conf.int = TRUE, 
+          cor.coef = TRUE, cor.method = "pearson",
+          xlab = "log_gdp_per_capita", ylab = "life_ladder")
+
+
+
+# Prueba de normalidad Shapiro-Wilk de las variables
+shapiro.test(Data_relevante$life_ladder) 
+shapiro.test(Data_relevante$log_gdp_per_capita)
+
+# Inspeccion gráfica de la normalidad de las variables
+ggqqplot(Data_relevante$life_ladder, ylab = "life_ladder")
+c= ggqqplot(Data_relevante$log_gdp_per_capita, ylab = "log_gdp_per_capita")
+
+# Finalmente test de correlación de Pearson
+res <- cor.test(Data_relevante$log_gdp_per_capita, Data_relevante$life_ladder, 
+                    method = "pearson")
+res
+
+# Interpretación de resultados
+# p.value: Valor p de la prueba
+# estimate: coeficiente de correlación
+res$p.value
+res$estimate
+
+# Guardar el primer gráfico
+# ggsave("plot_Aa.png", plot = a, limitsize = FALSE)
+
+# Guardar el segundo gráfico
+# ggsave("plot_Ab.png", plot = b, limitsize = FALSE)
+
+# Guardar el tercer gráfico
+# ggsave("plot_Ac.png", plot = c, limitsize = FALSE)
+```
+
+```{r}
+# Obtenemos la variable de estudio
+X <- Data_relevante$life_ladder
+
+# Se calcula el promedio y la varianza de la variable de estudio
+prom_X <- mean(X)
+var_X <- var(X)
+
+# Se define una función dependiente de la variable de estudio Y = 2X + 3
+Y <- function(x) 2*x + 3
+
+# Se calcula la derivada de Y con la media de X
+Y_prima <- function(x) 2
+
+# Se aplica el metodo delta para estimar la varianza de Y
+var_Y <- (Y_prima(prom_X))^2 * var_X
+
+# Se asume que Y sigue una distribucion normal, se determina su promedio y desviacion estandar
+mean_Y <- Y(prom_X)
+sd_Y <- sqrt(var_Y)
+
+```
+
+
+
