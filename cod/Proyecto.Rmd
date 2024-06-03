@@ -240,10 +240,7 @@ Descripcion_relevante = as.data.frame(descr(Data_relevante))
 
 Data_relevante$visualizacion <- cut(Data_relevante$life_ladder, breaks = 10)
 
-plot_a = ggplot(Data_relevante, aes(x = visualizacion)) +
-  geom_bar(fill = "lightblue") +
-  labs(x = "Intervalos", y = "Frecuencia") +
-  ggtitle("Gráfico de barras de variable continua en 10 intervalos")
+ggplot(Data_relevante, aes(x = life_ladder))+  geom_histogram()
 
 plot_b = ggplot(Data_relevante, aes(x = log_gdp_per_capita , y =life_ladder)) +
   geom_point(colour = "darkred")+
@@ -256,6 +253,7 @@ plot_c = ggplot(Data_relevante, aes(x = income_class , y =life_ladder)) +
 # ggsave("gdp_life.png", plot = plot_b)
 # ggsave("income_life.png", plot = plot_c)
 
+hist(Data_relevante$life_ladder)
 
 plot_a
 ```
