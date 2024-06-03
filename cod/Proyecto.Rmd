@@ -23,8 +23,9 @@ output:
 # install.packages("summarytools")
 # install.packages("ggplot2")
 # install.packages("corrplot")
+# install.packages("ggpubr")
 
-
+library(ggpubr)
 library(zoo)
 library(dplyr)
 library(readxl)
@@ -35,26 +36,22 @@ library(ggplot2)
 library(corrplot)
 ```
 
-
+# Importación de datos
 ```{r, warning=FALSE}
-# Se carga la base de datos principal
 setwd("..")
-directorio <- getwd()
-World_Data_Directorio <- file.path(directorio,
-                                   "data/World_Data.xlsx")
-World_Data <- read_excel(World_Data_Directorio)
+
+# Se carga la base de datos principal
+World_Data <- read_excel("data/World_Data.xlsx")
+
+# Se clona
 World_Data_2 <- World_Data
 
 # Se carga la base de datos con los indices de felicidad
-Tabla_Felicidad_Directorio <- file.path(directorio,
-                                        "data/DataForTable2.1 (1).xls")
-Tabla_Felicidad <- read_excel(Tabla_Felicidad_Directorio)
+Tabla_Felicidad <- read_excel("data/DataForTable2.1 (1).xls")
 ```
 
-
 ```{r}
-# Se obtiene un summary de las diferentes variables de la base de datos principal
-
+# Se obtiene un summary de la base de datos principal
 summary(World_Data)
 ```
 
@@ -74,9 +71,7 @@ for (col in names(World_Data_2)) {
 ```{r}
 # Se van a contar los N/A presentedes en la base de datos para asegurar
 # de que no haya ninguno
-
 colSums(is.na(World_Data_2))
-
 ```
 
 
@@ -84,7 +79,9 @@ colSums(is.na(World_Data_2))
 ```{r}
 # Los valores que presenta la tabla de World_Data utiliza promedios que van desde # el rango del 2015 al 2018, por lo que se procede a trabajar Tabla_Felicidad, se # eliminan los años que no corresponden al promedio que se desea calcular. Ademas # se calcula el promedio y se genera una nueva tabla unicamente con los promedios # de las distintas variables
 
-Tabla_Felicidad_Reducida <- Tabla_Felicidad[Tabla_Felicidad$year >= 2015 & Tabla_Felicidad$year <= 2018, ]
+Tabla_Felicidad_Reducida <- Tabla_Felicidad[
+  Tabla_Felicidad$year >= 2015 & Tabla_Felicidad$year <= 2018, 
+  ]
 
 Tabla_Felicidad_Promedio <- Tabla_Felicidad_Reducida %>%
   group_by(`Country name`) %>%
@@ -108,7 +105,10 @@ World_Data_2 <- World_Data_2 %>%
 # ademas se omiten los paises que no cuentan con una entrada en 
 # Tabla_Felicidad_Promedio
 
-World_Data_3 <- merge(World_Data_2, Tabla_Felicidad_Promedio, by.x = "country", by.y = "Country name")
+World_Data_3 <- merge(World_Data_2,
+                      Tabla_Felicidad_Promedio,
+                      by.x = "country",
+                      by.y = "Country name")
 ```
 
 ```{r}
@@ -118,7 +118,8 @@ World_Data_3 <- merge(World_Data_2, Tabla_Felicidad_Promedio, by.x = "country", 
 # de que no haya ninguno, además se va a realizar un summary de esta.
 # Como se explico de forma previa la existencia de valores N/A es debido a que no todos los paises reportan todos los años a las tres entidades de las cuales se obtienen los datos, esto debido a las distintas dinamicas geo-socio-politicas que se desarrollan en las distintas divisiones geograficas del mundo, asi como la calidad de las relaciones que existe entre los paises, o situaciones de guerra o crisis.
 
-promedios <- sapply(World_Data_3, function(x) if(is.numeric(x)) mean(x, na.rm = TRUE) else NA)
+promedios <- sapply(World_Data_3,
+                    function(x) if(is.numeric(x)) mean(x, na.rm = TRUE) else NA)
 for (col in names(World_Data_3)) {
   World_Data_3[[col]][is.na(World_Data_3[[col]])] <- promedios[[col]]
 }
@@ -162,7 +163,6 @@ colnames(World_Data_3) <- tolower(gsub(" ", "_", colnames(World_Data_3)))
 # Además vamos a eliminar la columna de país, ya que queremos conseguir una correlación entre las distintas variables, esta no aporta utilidad en una escala mayor.
 
 Data_trabajar <- subset(World_Data_3, select = -country)
-
 ```
 
 
@@ -197,7 +197,7 @@ Df_resumen = dfSummary(Data_trabajar)
 ```{r}
 # Se realiza un plot de correlaciones, ya que las dimensiones de LaTex limitan la posibilidad de utilizar la matriz numerica.
 
-png("correlaciones.png", width = 800, height = 800)  # Ajusta el ancho y alto según sea necesario
+# png("correlaciones.png", width = 800, height = 800) 
 
 corrplot(Correlacion, method = "circle", tl.cex = 1)
 
@@ -214,10 +214,13 @@ for(var in variables) {
     geom_point() +
     labs(x = var, y = "Life Ladder",
          title = paste("Gráfico de", var, "contra Life Ladder"))
+  print(p)
   #ggsave(filename = paste0("C:/Users/Anthony/Desktop/", var, "_vs_life_ladder.png"), plot = p)
 }
 
 ```
+
+
 ```{r}
 # Ahora que tenemos el plot de correlacion, seleccionamos las variables relevantes para el estudio, asi que creamos un nuevo data frame unicamente con las variables importantes.
 
@@ -257,12 +260,14 @@ log_gdp_table <- data.frame(
 print(log_gdp_table)
 
 Descripcion_relevante = as.data.frame(descr(Data_relevante))
-write.xlsx(life_ladder_table, "life_ladder_table.xlsx", row.names = TRUE)
-write.xlsx(log_gdp_table, "log_gdp_table.xlsx", row.names = TRUE)
-write.xlsx(Descripcion_relevante, "Descripcion_relevante.xlsx", row.names = TRUE)
+#write.xlsx(life_ladder_table, "life_ladder_table.xlsx", row.names = TRUE)
+#write.xlsx(log_gdp_table, "log_gdp_table.xlsx", row.names = TRUE)
+#write.xlsx(Descripcion_relevante, "Descripcion_relevante.xlsx", row.names = TRUE)
 
 
 ```
+
+
 ```{r}
 # Se van a desarrollar graficos con el fin de estudiar el comportamiento de los datos selectos
 
@@ -274,18 +279,15 @@ plot_b = ggplot(Data_relevante, aes(x = log_gdp_per_capita , y =life_ladder)) +
 
 plot_c = ggplot(Data_relevante, aes(x = income_class , y =life_ladder)) +
   geom_point()
-ggsave("life_variacion.png", plot = plot_a)
-ggsave("gdp_life.png", plot = plot_b)
-ggsave("income_life.png", plot = plot_c)
+# ggsave("life_variacion.png", plot = plot_a)
+# ggsave("gdp_life.png", plot = plot_b)
+# ggsave("income_life.png", plot = plot_c)
 
 ```
 
 
 
 ```{r}
-# Para obtener una visualización de data en ggplot2 mas eficiente
-install.packages("ggpubr")
-library("ggpubr")
 
 # Obtenemos la correlación utilizando distintos metodos, en este caso Pearson, Kendall y Spearman, vamos a concentrarnos en Pearson, pero los otros metodos nos permite tener una idea mas clara del comportamiento de los datos.
 cor(Data_relevante$log_gdp_per_capita, Data_relevante$life_ladder, method = c("pearson", "kendall", "spearman"))
@@ -319,13 +321,13 @@ res$p.value
 res$estimate
 
 # Guardar el primer gráfico
-ggsave("plot_Aa.png", plot = a, limitsize = FALSE)
+# ggsave("plot_Aa.png", plot = a, limitsize = FALSE)
 
 # Guardar el segundo gráfico
-ggsave("plot_Ab.png", plot = b, limitsize = FALSE)
+# ggsave("plot_Ab.png", plot = b, limitsize = FALSE)
 
 # Guardar el tercer gráfico
-ggsave("plot_Ac.png", plot = c, limitsize = FALSE)
+# ggsave("plot_Ac.png", plot = c, limitsize = FALSE)
 ```
 
 ```{r}
