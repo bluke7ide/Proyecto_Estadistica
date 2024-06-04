@@ -26,6 +26,7 @@ output:
 # install.packages("corrplot")
 # install.packages("ggpubr")
 
+library(ggplot2)
 library(ggpubr)
 library(zoo)
 library(dplyr)
@@ -33,7 +34,6 @@ library(readxl)
 library(gtsummary)
 library(pastecs)
 library(summarytools)
-library(ggplot2)
 library(corrplot)
 ```
 
@@ -242,6 +242,10 @@ Data_relevante$visualizacion <- cut(Data_relevante$life_ladder, breaks = 10)
 
 ggplot(Data_relevante, aes(x = life_ladder))+  geom_histogram()
 
+plot_a = ggplot(Data_relevante, aes(x = log_gdp_per_capita , y =life_ladder)) +
+  geom_point(colour = "darkred")+
+  theme_minimal()
+
 plot_b = ggplot(Data_relevante, aes(x = log_gdp_per_capita , y =life_ladder)) +
   geom_point(colour = "darkred")+
   theme_minimal()
@@ -301,25 +305,37 @@ res$estimate
 # ggsave("plot_Ac.png", plot = c, limitsize = FALSE)
 ```
 
+Metodo Delta Multivariable
+
 ```{r}
-# Obtenemos la variable de estudio
-X <- Data_relevante$life_ladder
+# Se establece la variable a predecir "life_ladder" y la predictora "log_gdp_per_capita"
+Y <- Data_relevante$life_ladder
+X <- Data_relevante$log_gdp_per_capita
+XY <- X*Y
+X_2 <- X*X
+n <- length(Data_relevante$life_ladder)
 
-# Se calcula el promedio y la varianza de la variable de estudio
-prom_X <- mean(X)
+# Covarianza y varianzas
+valor_cov <- cov(X, Y)
 var_X <- var(X)
+var_Y <- var(Y)
 
-# Se define una función dependiente de la variable de estudio Y = 2X + 3
-Y <- function(x) 2*x + 3
+# Correlacion
+cor = valor_cov/(sqrt(var_X * var_Y))
 
-# Se calcula la derivada de Y con la media de X
-Y_prima <- function(x) 2
+# Promedios
+XY_promedio <- mean(XY)
+X_promedio <- mean(X)
+Y_promedio <- mean(Y)
+X_2_promedio <- mean(X_2)
 
-# Se aplica el metodo delta para estimar la varianza de Y
-var_Y <- (Y_prima(prom_X))^2 * var_X
+rn <- (XY_promedio - X_promedio * Y_promedio) / (sqrt(X_2_promedio - X_promedio^2))
 
-# Se asume que Y sigue una distribucion normal, se determina su promedio y desviacion estandar
-mean_Y <- Y(prom_X)
-sd_Y <- sqrt(var_Y)
+# Funcion g
+funcion_g <- atan(cor)
+funcion_g_prima <- 1/(1-cor^2)
 
+# TLC
+tlc <- sqrt(n) * (rn - cor) / (1 - cor^2)
 ```
+
