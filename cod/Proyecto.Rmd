@@ -14,6 +14,11 @@ output:
     downcute_theme: "chaos"
 ---
 
+```{r setup, include=FALSE}
+knitr::opts_knit$set(root.dir = rprojroot::find_rstudio_root_file())
+```
+
+
 # Librerias
 
 ```{r, warning=FALSE, message=FALSE}
@@ -25,7 +30,8 @@ output:
 # install.packages("ggplot2")
 # install.packages("corrplot")
 # install.packages("ggpubr")
-
+# install.packages('xlsx')     
+  
 library(ggpubr)
 library(zoo)
 library(dplyr)
@@ -35,13 +41,12 @@ library(pastecs)
 library(summarytools)
 library(ggplot2)
 library(corrplot)
+library(xlsx)
 ```
 
 # Importación de datos
 
-```{r, warning=FALSE}
-setwd("..")
-
+```{r}
 # Se carga la base de datos principal
 World_Data <- read_excel("data/World_Data.xlsx")
 
@@ -125,7 +130,7 @@ for (col in names(World_Data_3)) {
 }
 conteo_NA <- colSums(is.na(World_Data_3))
 World_Data_3_Resumen = descr(World_Data_3)
-#write.xlsx(World_Data_3_Resumen, "Estadisticas_Descriptivas.xlsx", row.names = TRUE)
+write.xlsx(World_Data_3_Resumen, "docs/Estadisticas_Descriptivas.xlsx", row.names = TRUE)
 ```
 
 
@@ -166,8 +171,8 @@ Tabla_covarianza = as.data.frame(cov(Data_trabajar))
 Tabla_correlacion = as.data.frame(cor(Data_trabajar))
 Correlacion = cor(Data_trabajar)
 
-#write.xlsx(Tabla_covarianza, "Covarianza.xlsx", row.names = TRUE)
-#write.xlsx(Tabla_correlacion, "Correlacion.xlsx", row.names = TRUE)
+write.xlsx(Tabla_covarianza, "docs/Covarianza.xlsx", row.names = TRUE)
+write.xlsx(Tabla_correlacion, "docs/Correlacion.xlsx", row.names = TRUE)
 
 corrplot(Correlacion, method = "circle", tl.cex = 0.4)
 ```
@@ -175,9 +180,9 @@ corrplot(Correlacion, method = "circle", tl.cex = 0.4)
 Se realiza un plot de correlaciones, ya que las dimensiones de LaTex limitan la posibilidad de utilizar la matriz numerica.
 
 ```{r}
-# png("correlaciones.png", width = 800, height = 800) 
+png("docs/correlaciones.png", width = 800, height = 800) 
 corrplot(Correlacion, method = "circle", tl.cex = 1)
-# dev.off()
+dev.off()
 ```
 
 ## Estadísticas descriptivas
@@ -193,16 +198,15 @@ Df_resumen = dfSummary(Data_trabajar)
 ## Graficar las variables
 
 ```{r}
-setwd("..")
 variables <- setdiff(names(Data_trabajar), "life_ladder")
 for(var in variables) {
   p <- ggplot(Data_trabajar, aes_string(x = var, y = "life_ladder")) +
-    geom_point(color = "tomato") +
+    geom_point(color = "tomato", size = 2) +
     labs(x = var, y = "Life Ladder",
-         title = paste("Gráfico de", var, "contra life_ladder")) + 
+         title = paste("Gráfico de", var, "contra life_ladder")) +
     theme_minimal()
   print(p)
-  # ggsave(filename = paste0("docs/", var, "_vs_life_ladder.png"), plot = p)
+  # ggsave(filename = paste0("docs/primeros_graficos/", var, "_vs_life_ladder.png"), plot = p)
 }
 
 ```
@@ -239,7 +243,7 @@ life_ladder_table <- data.frame(
 print(life_ladder_table)
 ```
 
-
+## Resumen de la variable log_gdp_per_capita
 ```{r}
 log_gdp_summary <- summary(Data_trabajar$log_gdp_per_capita)
 
@@ -253,79 +257,100 @@ log_gdp_table <- data.frame(
 print(log_gdp_table)
 
 Descripcion_relevante = as.data.frame(descr(Data_relevante))
-#write.xlsx(life_ladder_table, "life_ladder_table.xlsx", row.names = TRUE)
-#write.xlsx(log_gdp_table, "log_gdp_table.xlsx", row.names = TRUE)
-#write.xlsx(Descripcion_relevante, "Descripcion_relevante.xlsx", row.names = TRUE)
-
+write.xlsx(life_ladder_table, "docs/life_ladder_table.xlsx", row.names = TRUE)
+write.xlsx(log_gdp_table, "docs/log_gdp_table.xlsx", row.names = TRUE)
+write.xlsx(Descripcion_relevante, "docs/Descripcion_relevante.xlsx", row.names = TRUE)
 
 ```
 
-```{r}
-# Se van a desarrollar graficos con el fin de estudiar el comportamiento de los datos selectos
+## Gráfico de los datos selectos
+Se van a desarrollar graficos con el fin de estudiar el comportamiento de los datos selectos
+```{r, warning=FALSE}
 
-Data_relevante$visualizacion <- cut(Data_relevante$life_ladder, breaks = 10)
 
-ggplot(Data_relevante, aes(x = life_ladder))+  geom_histogram()
-
+plot_a <- ggplot(Data_relevante, aes(x = life_ladder)) +
+  geom_histogram(binwidth = 0.1, fill = "lightblue", color = "black") +
+  labs(title = "Histograma de life_ladder",
+       x = "Valores", 
+       y ="Frecuencia") +
+  xlim(3,8) +
+  ylim(0,15) +
+  theme_minimal() 
+  
 plot_b = ggplot(Data_relevante, aes(x = log_gdp_per_capita , y =life_ladder)) +
   geom_point(colour = "darkred")+
+  labs(title = "Grafico de log_gdp_per_capita vs life_ladder",
+       x = "log_gdp_per_capita", 
+       y ="life_ladder") +
   theme_minimal()
 
 plot_c = ggplot(Data_relevante, aes(x = income_class , y =life_ladder)) +
   geom_point(colour = "darkblue") +
+  labs(title = "Grafico de income_class vs life_ladder",
+       x = "income_class", 
+       y ="life_ladder") +
   theme_minimal()
-# ggsave("life_variacion.png", plot = plot_a)
-# ggsave("gdp_life.png", plot = plot_b)
-# ggsave("income_life.png", plot = plot_c)
-
-hist(Data_relevante$life_ladder)
 
 plot_a
+plot_b
+plot_c
+ggsave("docs/segundos_graficos/life_variacion.png", plot = plot_a)
+ggsave("docs/segundos_graficos/gdp_life.png", plot = plot_b)
+ggsave("docs/segundos_graficos/income_life.png", plot = plot_c)
 ```
+# Análisis de comportamientos
 
+## Shapiro test
 ```{r}
-
 # Obtenemos la correlación utilizando distintos metodos, en este caso Pearson, Kendall y Spearman, vamos a concentrarnos en Pearson, pero los otros metodos nos permite tener una idea mas clara del comportamiento de los datos.
-cor(Data_relevante$log_gdp_per_capita, Data_relevante$life_ladder, method = c("pearson", "kendall", "spearman"))
-cor.test(Data_relevante$log_gdp_per_capita, Data_relevante$life_ladder, method=c("pearson", "kendall", "spearman"))
-
-# Gráfico de dispersoón de la correlación
-ggscatter(Data_relevante, x = "log_gdp_per_capita", y = "life_ladder", 
-          add = "reg.line", conf.int = TRUE, 
-          cor.coef = TRUE, cor.method = "pearson",
-          xlab = "log_gdp_per_capita", ylab = "life_ladder")
-
-
+cor(Data_relevante$log_gdp_per_capita,
+    Data_relevante$life_ladder,
+    method = c("pearson", "kendall", "spearman"))
+cor.test(Data_relevante$log_gdp_per_capita,
+         Data_relevante$life_ladder,
+         method=c("pearson", "kendall", "spearman"))
 
 # Prueba de normalidad Shapiro-Wilk de las variables
 shapiro.test(Data_relevante$life_ladder) 
 shapiro.test(Data_relevante$log_gdp_per_capita)
 
-# Inspeccion gráfica de la normalidad de las variables
-ggqqplot(Data_relevante$life_ladder, ylab = "life_ladder")
-c= ggqqplot(Data_relevante$log_gdp_per_capita, ylab = "log_gdp_per_capita")
 
 # Finalmente test de correlación de Pearson
 res <- cor.test(Data_relevante$log_gdp_per_capita, Data_relevante$life_ladder, 
                     method = "pearson")
 res
-
-# Interpretación de resultados
-# p.value: Valor p de la prueba
-# estimate: coeficiente de correlación
 res$p.value
 res$estimate
-
-# Guardar el primer gráfico
-# ggsave("plot_Aa.png", plot = a, limitsize = FALSE)
-
-# Guardar el segundo gráfico
-# ggsave("plot_Ab.png", plot = b, limitsize = FALSE)
-
-# Guardar el tercer gráfico
-# ggsave("plot_Ac.png", plot = c, limitsize = FALSE)
 ```
 
+## Gráficos relevantes
+```{r}
+# Realizar cada uno de los gráficos 
+grafico_a <- ggscatter(Data_relevante, x = "log_gdp_per_capita", y = "life_ladder", 
+               add = "reg.line", conf.int = TRUE, 
+               cor.coef = TRUE, cor.method = "pearson",
+               title = "Gráfico de log_gdp_per_capita vs life_ladder",
+               xlab = "log_gdp_per_capita", 
+               ylab = "life_ladder") + 
+  theme_minimal()
+grafico_b <- ggqqplot(Data_relevante$life_ladder, ylab = "life_ladder") +
+  labs(title = "Gráfico cuantil de life_ladder")
+grafico_c <- ggqqplot(Data_relevante$log_gdp_per_capita, ylab = "log_gdp_per_capita") +
+  labs(title = "Gráfico cuantil de log_gdp_per_capita")
+
+# Mostrarlos
+grafico_a
+grafico_b
+grafico_c
+
+# Guardarlos
+ggsave("docs/terceros_graficos/plot_Aa.png", plot = grafico_a, limitsize = FALSE)
+ggsave("docs/terceros_graficos/plot_Ab.png", plot = grafico_b, limitsize = FALSE)
+ggsave("docs/terceros_graficos/plot_Ac.png", plot = grafico_c, limitsize = FALSE)
+```
+
+
+## Método delta
 ```{r}
 # Obtenemos la variable de estudio
 X <- Data_relevante$life_ladder
