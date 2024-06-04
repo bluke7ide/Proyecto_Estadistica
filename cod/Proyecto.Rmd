@@ -300,6 +300,32 @@ ggsave("docs/segundos_graficos/income_life.png", plot = plot_c)
 ```
 # Análisis de comportamientos
 
+## Visualización en curva de la variable life_ladder
+```{r}
+ggplot(Data_relevante, aes(x = life_ladder)) +
+  geom_histogram(aes(y = ..density.., fill = "Histograma"), 
+                 color = "black") +
+  geom_density(aes(fill = "Densidad"), 
+               color = "royalblue", 
+               alpha = 0.4) +
+  geom_function(fun = function(t) dnorm(x = t, mean = 5.5, sd = 1.2),
+                aes(color = "Normal(5.5,1.2)"),
+                linewidth = 1.5) + 
+  labs(title = "Histograma de life_ladder",
+       x = "Valores", 
+       y = "Densidad",
+       color = " ",
+       fill = " ") +
+  xlim(0, 10) +
+  scale_fill_manual(values = c("blue", "lightblue")) +
+  scale_color_manual(values = c("darkorange3")) +
+  theme_minimal() + 
+  theme(legend.position = 'bottom')
+
+  
+```
+
+
 ## Shapiro test
 ```{r}
 # Obtenemos la correlación utilizando distintos metodos, en este caso Pearson, Kendall y Spearman, vamos a concentrarnos en Pearson, pero los otros metodos nos permite tener una idea mas clara del comportamiento de los datos.
@@ -348,8 +374,6 @@ ggsave("docs/terceros_graficos/plot_Aa.png", plot = grafico_a, limitsize = FALSE
 ggsave("docs/terceros_graficos/plot_Ab.png", plot = grafico_b, limitsize = FALSE)
 ggsave("docs/terceros_graficos/plot_Ac.png", plot = grafico_c, limitsize = FALSE)
 ```
-
-
 ## Método delta
 ```{r}
 # Obtenemos la variable de estudio
