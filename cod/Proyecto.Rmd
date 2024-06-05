@@ -13,13 +13,11 @@ output:
     default_style: "dark"
     downcute_theme: "chaos"
 ---
-
 ```{r setup, include=FALSE}
 knitr::opts_knit$set(root.dir = rprojroot::find_rstudio_root_file())
 ```
 
-# Librerias
-
+# Librerías
 ```{r, warning=FALSE, message=FALSE}
 # install.packages("zoo")
 # install.packages("dplyr")
@@ -44,7 +42,6 @@ library(xlsx)
 ```
 
 # Importación de datos
-
 ```{r}
 # Se carga la base de datos principal
 World_Data <- read_excel("data/World_Data.xlsx")
@@ -59,37 +56,14 @@ Tabla_Felicidad <- read_excel("data/DataForTable2.1 (1).xls")
 # Análisis descriptivo
 
 ## Resumen
-
 Se obtiene un summary de la base de datos principal
-
 ```{r}
 summary(World_Data)
 ```
 
 ## Limpieza de los datos
-
-### Primera imputación NA
-
-La existencia de valores N/A es debido a que no todos los paises reportan todos los años a las tres entidades de las cuales se obtienen los datos, esto debido a las distintas dinamicas geo-socio-politicas que se desarrollan en las distintas divisiones geograficas del mundo, asi como la calidad de las relaciones que existe entre los paises, o situaciones de guerra o crisis.
-
-```{r}
-# Se decide reemplazar por el promedio de la variable.
-promedios <- sapply(World_Data_2,
-                    function(x) if(is.numeric(x)) mean(x, na.rm = TRUE) else NA)
-for (col in names(World_Data_2)) {
-  World_Data_2[[col]][is.na(World_Data_2[[col]])] <- promedios[[col]]
-}
-```
-
-```{r}
-# Se cuentan los NA restantes
-colSums(is.na(World_Data_2))
-```
-
-### Acotación de la tabla de índices de felicidad
-
-Los valores que presenta la tabla de World_Data utiliza promedios que van desde el rango del 2015 al 2018, por lo que se procede a trabajar Tabla_Felicidad, se eliminan los años que no corresponden al promedio que se desea calcular. Ademas, se calcula el promedio y se genera una nueva tabla unicamente con los promedios de las distintas variables
-
+### Resumir la variable de año
+Los valores que presenta la tabla de World_Data utiliza promedios que van desde el rango del 2015 al 2018, por lo que para proceder a trabajar Tabla_Felicidad, se hace un promedio de las variables agrupando con los países y se elimina la variable de año. Además, se calcula el promedio y se genera una nueva tabla únicamente con los promedios de las distintas variables
 ```{r}
 Tabla_Felicidad_Reducida <- Tabla_Felicidad[
   Tabla_Felicidad$year >= 2015 & Tabla_Felicidad$year <= 2018, 
@@ -103,17 +77,15 @@ Tabla_Felicidad_Promedio <- Tabla_Felicidad_Promedio %>%
   select(-year)
 ```
 
+### Eliminar variables repetidas
 Se eliminan de World_Data_2 las variables "social_support", "freedom" y "generosity", esto con el fin de agregar los promedios obtenidos de Tabla_Felicidad_Reducida.
-
 ```{r}
 World_Data_2 <- World_Data_2 %>%
   select(-social_support, -freedom, -generosity)
 ```
 
 ### Mezcla de las dos bases de datos
-
-Se unen los dos df, realizando una comparacion entre country y Country name, ademas se omiten los paises que no cuentan con una entrada en Tabla_Felicidad_Promedio
-
+Se unen los dos dataframes, realizando una comparación entre "country" y "Country name", ademas se omiten los países que no cuentan con una entrada en Tabla_Felicidad_Promedio
 ```{r}
 World_Data_3 <- merge(World_Data_2,
                       Tabla_Felicidad_Promedio,
@@ -121,24 +93,26 @@ World_Data_3 <- merge(World_Data_2,
                       by.y = "Country name")
 ```
 
-### Segunda limpieza NA
-
-Se decide reemplazar los valores N/A presentes en distintas entradas por el promedio de la variable. Se van a contar los N/A presentedes en la base de datos para asegurar de que no haya ninguno, además se va a realizar un summary de esta. Como se explico de forma previa la existencia de valores N/A es debido a que no todos los paises reportan todos los años a las tres entidades de las cuales se obtienen los datos, esto debido a las distintas dinamicas geo-socio-politicas que se desarrollan en las distintas divisiones geograficas del mundo, asi como la calidad de las relaciones que existe entre los paises, o situaciones de guerra o crisis.
-
+### Limpieza NA
+Se decide reemplazar los valores N/A presentes en distintas entradas por el promedio de la variable. Se van a contar los N/A después del procedimiento para asegurar de que no haya ninguno, y además se va a realizar un summary de esta. La existencia de valores N/A es debido a que no todos los países reportan todos los años a las tres entidades de las cuales se obtienen los datos, esto debido a las distintas dinámicas geo-socio-políticas que se desarrollan en las distintas divisiones geográficas del mundo, así como la calidad de las relaciones que existe entre los países, o situaciones de guerra o crisis.
 ```{r}
 promedios <- sapply(World_Data_3,
                     function(x) if(is.numeric(x)) mean(x, na.rm = TRUE) else NA)
 for (col in names(World_Data_3)) {
   World_Data_3[[col]][is.na(World_Data_3[[col]])] <- promedios[[col]]
 }
-conteo_NA <- colSums(is.na(World_Data_3))
+(conteo_NA <- colSums(is.na(World_Data_3)))
+```
+
+Y se guarda el desc brevemente
+```{r}
 World_Data_3_Resumen = descr(World_Data_3)
 write.xlsx(World_Data_3_Resumen, "docs/Estadisticas_Descriptivas.xlsx", row.names = TRUE)
 ```
 
 ### Transformación de la columna income_class
 
-En la estructura que presenta "World_Data_3" se puede observar que cada variable va en una columna, no existe una combinación de distintas variables en la misma columna. A su vez cada observación es unica y sus valores estan distribuidos a lo largo de una unica fila Existe un identificador o key claro para cada una de las entradas, en este caso corresponde a la columna "country" que indica el país. Además queremos que todas las variables manejen valores numericos, asi que se va a reemplazar los valores de "income_class" por su factor, para de esta forma tener unicamente variables numericas. Ahora lo que vamos a realizar es un analisis descriptivo completo de la tabla, la forma mas sencilla de empezar este proceso es mediante la funcion "summary()", la cual me permite obtener distintos estadísticos de la tabla en cuestión. Se procede a utilizar dicha funcion.
+En la estructura que presenta "World_Data_3" se puede observar que cada variable va en una columna, no existe una combinación de distintas variables en la misma columna. A su vez cada observación es unica y sus valores estan distribuidos a lo largo de una unica fila Existe un identificador o key claro para cada una de las entradas, en este caso corresponde a la columna "country" que indica el país. Además queremos que todas las variables manejen valores numericos, asi que se va a reemplazar los valores de "income_class" por su factor, para de esta forma tener unicamente variables numericas. Ahora lo que vamos a realizar es un analisis descriptivo completo de la tabla, la forma mas sencilla de empezar este proceso es mediante la funcion "summary()", la cual permite obtener distintos estadísticos de la tabla en cuestión. Se procede a utilizar dicha funcion.
 
 ```{r}
 World_Data_3 <- World_Data_3 %>%
@@ -148,15 +122,11 @@ World_Data_3 <- World_Data_3 %>%
     income_class == "Upper middle income" ~ 2,
     income_class == "High income" ~ 3
   ))
-
-str(World_Data_3)
 ```
 
 ### Haciendo las columnas en formato tidy
-
 ```{r}
 colnames(World_Data_3) <- tolower(gsub(" ", "_", colnames(World_Data_3)))
-summary(World_Data_3)
 ```
 
 ### Eliminar la columna país
@@ -165,42 +135,27 @@ Además vamos a eliminar la columna de país, ya que queremos conseguir una corr
 
 ```{r}
 Data_trabajar <- subset(World_Data_3, select = -country)
+summary(Data_trabajar)
 ```
 
 ## Correlaciones
 
-Con la data estructurada de la forma adecuada, podemos empezamos a buscar la relación existente entre los distintos marcadores con respecto a nuestro variable objetivo, en este caso life_ladder. De la matriz de covarianza, podemos encontrar que tanta relación existe entre las distintas variables que forman la tabla, de forma que va a ser mas sencillo visualizar en que variables concentrar el estudio. Asi como la de correlacion, ya que al estar normalizada con valores que van desde -1 hasta 1, resulta mas sencilla observar las relaciones existentes
-
-También se imprime el plot de correlaciones, ya que las dimensiones de LaTex limitan la posibilidad de utilizar la matriz numerica.
-```{r, message=FALSE}
-Tabla_covarianza = as.data.frame(cov(Data_trabajar))
-Tabla_correlacion = as.data.frame(cor(Data_trabajar))
-Correlacion = cor(Data_trabajar)
-
-write.xlsx(Tabla_covarianza, "docs/Covarianza.xlsx", row.names = TRUE)
-write.xlsx(Tabla_correlacion, "docs/Correlacion.xlsx", row.names = TRUE)
+Con la data estructurada de la forma adecuada, podemos empezamos a buscar la relación existente entre los distintos marcadores con respecto a nuestro variable objetivo, en este caso "life_ladder". De la matriz de covarianza, podemos encontrar que tanta relación existe entre las distintas variables que forman la tabla, de forma que va a ser mas sencillo visualizar en que variables concentrar el estudio. Así como la de correlación, ya que al estar normalizada con valores que van desde -1 hasta 1, resulta mas sencilla observar las relaciones existentes. También se imprime el plot de correlaciones, ya que las dimensiones de Látex limitan la posibilidad de utilizar la matriz numérica.
+```{r, message=FALSE, warning=FALSE, echo=FALSE}
+write.xlsx(as.data.frame(cov(Data_trabajar)),
+           "docs/Covarianza.xlsx", row.names = TRUE)
+write.xlsx(as.data.frame(cor(Data_trabajar)),
+           "docs/Correlacion.xlsx", row.names = TRUE)
 
 png("docs/primeros_graficos/correlaciones.png", width = 800, height = 800) 
-corrplot(Correlacion, method = "circle", tl.cex = 1)
+corrplot(cor(Data_trabajar), method = "circle", tl.cex = 1)
 dev.off()
 
-corrplot(Correlacion, method = "circle", tl.cex = 0.5)
-```
-
-## Estadísticas descriptivas
-
-Además se van a conseguir varios marcadores estadisticos con el fin de tener un entendimiento más completo de los datos y como estos se comportan de forma individual
-
-```{r}
-Tabla_stats = stat.desc(Data_trabajar)
-Tabla_descripcion = descr(Data_trabajar)
-Df_resumen = dfSummary(Data_trabajar)
-
+corrplot(cor(Data_trabajar), method = "circle", tl.cex = 0.5)
 ```
 
 ## Selección de variables relevantes
-
-Ahora que tenemos el plot de correlacion, seleccionamos las variables relevantes para el estudio, asi que creamos un nuevo data frame unicamente con las variables importantes.
+Ahora que tenemos el plot de correlación, seleccionamos las variables relevantes para el estudio, así que creamos un nuevo dataframe únicamente con las variables importantes, entre las que más se relacionan.
 
 ```{r}
 Data_relevante = Data_trabajar %>% select (life_ladder,
@@ -209,48 +164,43 @@ Data_relevante = Data_trabajar %>% select (life_ladder,
                                            income_class,
                                            cpi,
                                            log_gdp_per_capita)
-
-(life_ladder_summary <- summary(Data_trabajar$life_ladder))
 ```
 
 ## Descripción de variables relevantes
-
 Vamos a realizar varios estadísticos breves para las variables escogidas
-
 ```{r}
 life_ladder_table <- data.frame(
-  Measure = c("Minimum", "1st Quartile", "Median", "Mean", "3rd Quartile", "Maximum", "Standard Deviation"),
-  Value = c(life_ladder_summary[1],
-            quantile(Data_trabajar$life_ladder, 0.25), 
-            median(Data_trabajar$life_ladder),
-            mean(Data_trabajar$life_ladder), 
-            quantile(Data_trabajar$life_ladder, 0.75),
-            life_ladder_summary[6],
+  Valor = c(summary(Data_relevante$life_ladder),
             sd(Data_trabajar$life_ladder))
 )
-
+row.names(life_ladder_table) <- c("Mínimo",
+                                  "1° Cuartil",
+                                  "Mediana",
+                                  "Media",
+                                  "3° Cuartil",
+                                  "Máximo",
+                                  "Desviación Estándar")
 print(life_ladder_table)
 ```
 
-## Resumen de la variable log_gdp_per_capita
+```{r}
+log_gdp_table <- data.frame(
+  Valor = c(summary(Data_relevante$log_gdp_per_capita),
+            sd(Data_trabajar$log_gdp_per_capita))
+)
+row.names(log_gdp_table) <- c("Mínimo",
+                              "1° Cuartil",
+                              "Mediana",
+                              "Media",
+                              "3° Cuartil",
+                              "Máximo",
+                              "Desviación Estándar")
+print(log_gdp_table)
+```
 
 ```{r}
-log_gdp_summary <- summary(Data_trabajar$log_gdp_per_capita)
-
-log_gdp_table <- data.frame(
-  Measure = c("Minimum", "1st Quartile", "Median", "Mean", "3rd Quartile", "Maximum", "Standard Deviation"),
-  Value = c(log_gdp_summary[1], quantile(Data_trabajar$log_gdp_per_capita, 0.25), 
-            median(Data_trabajar$log_gdp_per_capita), mean(Data_trabajar$log_gdp_per_capita), 
-            quantile(Data_trabajar$log_gdp_per_capita, 0.75), log_gdp_summary[6], sd(Data_trabajar$log_gdp_per_capita))
-)
-
-print(log_gdp_table)
-
-Descripcion_relevante = as.data.frame(descr(Data_relevante))
 write.xlsx(life_ladder_table, "docs/life_ladder_table.xlsx", row.names = TRUE)
 write.xlsx(log_gdp_table, "docs/log_gdp_table.xlsx", row.names = TRUE)
-write.xlsx(Descripcion_relevante, "docs/Descripcion_relevante.xlsx", row.names = TRUE)
-
 ```
 
 ## Gráfico de los datos selectos
@@ -381,12 +331,11 @@ ggsave("docs/segundos_graficos/income_life.png", plot = plot_d)
 ggsave("docs/segundos_graficos/cpi_life.png", plot = plot_e)
 ggsave("docs/segundos_graficos/lgdp_life.png", plot = plot_f)
 ```
+
 # Análisis de comportamientos
-
 ## Shapiro test
-
+Obtenemos la correlación utilizando distintos métodos, en este caso Pearson, Kendall y Spearman, vamos a concentrarnos en Pearson, pero los otros métodos nos permite tener una idea mas clara del comportamiento de los datos.
 ```{r}
-# Obtenemos la correlación utilizando distintos metodos, en este caso Pearson, Kendall y Spearman, vamos a concentrarnos en Pearson, pero los otros metodos nos permite tener una idea mas clara del comportamiento de los datos.
 cor(Data_relevante$log_gdp_per_capita,
     Data_relevante$life_ladder,
     method = c("pearson", "kendall", "spearman"))
