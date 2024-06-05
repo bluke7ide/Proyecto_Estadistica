@@ -171,7 +171,8 @@ Data_trabajar <- subset(World_Data_3, select = -country)
 
 Con la data estructurada de la forma adecuada, podemos empezamos a buscar la relación existente entre los distintos marcadores con respecto a nuestro variable objetivo, en este caso life_ladder. De la matriz de covarianza, podemos encontrar que tanta relación existe entre las distintas variables que forman la tabla, de forma que va a ser mas sencillo visualizar en que variables concentrar el estudio. Asi como la de correlacion, ya que al estar normalizada con valores que van desde -1 hasta 1, resulta mas sencilla observar las relaciones existentes
 
-```{r}
+También se imprime el plot de correlaciones, ya que las dimensiones de LaTex limitan la posibilidad de utilizar la matriz numerica.
+```{r, message=FALSE}
 Tabla_covarianza = as.data.frame(cov(Data_trabajar))
 Tabla_correlacion = as.data.frame(cor(Data_trabajar))
 Correlacion = cor(Data_trabajar)
@@ -179,15 +180,11 @@ Correlacion = cor(Data_trabajar)
 write.xlsx(Tabla_covarianza, "docs/Covarianza.xlsx", row.names = TRUE)
 write.xlsx(Tabla_correlacion, "docs/Correlacion.xlsx", row.names = TRUE)
 
-corrplot(Correlacion, method = "circle", tl.cex = 0.4)
-```
-
-Se realiza un plot de correlaciones, ya que las dimensiones de LaTex limitan la posibilidad de utilizar la matriz numerica.
-
-```{r}
-png("docs/correlaciones.png", width = 800, height = 800) 
+png("docs/primeros_graficos/correlaciones.png", width = 800, height = 800) 
 corrplot(Correlacion, method = "circle", tl.cex = 1)
 dev.off()
+
+corrplot(Correlacion, method = "circle", tl.cex = 0.5)
 ```
 
 ## Estadísticas descriptivas
@@ -198,22 +195,6 @@ Además se van a conseguir varios marcadores estadisticos con el fin de tener un
 Tabla_stats = stat.desc(Data_trabajar)
 Tabla_descripcion = descr(Data_trabajar)
 Df_resumen = dfSummary(Data_trabajar)
-
-```
-
-## Graficar las variables
-
-```{r}
-variables <- setdiff(names(Data_trabajar), "life_ladder")
-for(var in variables) {
-  p <- ggplot(Data_trabajar, aes_string(x = var, y = "life_ladder")) +
-    geom_point(color = "tomato", size = 2) +
-    labs(x = var, y = "Life Ladder",
-         title = paste("Gráfico de", var, "contra life_ladder")) +
-    theme_minimal()
-  print(p)
-  # ggsave(filename = paste0("docs/primeros_graficos/", var, "_vs_life_ladder.png"), plot = p)
-}
 
 ```
 
@@ -276,46 +257,8 @@ write.xlsx(Descripcion_relevante, "docs/Descripcion_relevante.xlsx", row.names =
 
 Se van a desarrollar graficos con el fin de estudiar el comportamiento de los datos selectos
 
-```{r, warning=FALSE}
-
-
+```{r, warning=FALSE, message=FALSE, echo=FALSE}
 plot_a <- ggplot(Data_relevante, aes(x = life_ladder)) +
-  geom_histogram(binwidth = 0.1, fill = "lightblue", color = "black") +
-  labs(title = "Histograma de life_ladder",
-       x = "Valores", 
-       y ="Frecuencia") +
-  xlim(3,8) +
-  ylim(0,15) +
-  theme_minimal() 
-  
-plot_b = ggplot(Data_relevante, aes(x = log_gdp_per_capita , y =life_ladder)) +
-  geom_point(colour = "darkred")+
-  labs(title = "Grafico de log_gdp_per_capita vs life_ladder",
-       x = "log_gdp_per_capita", 
-       y ="life_ladder") +
-  theme_minimal()
-
-plot_c = ggplot(Data_relevante, aes(x = income_class , y =life_ladder)) +
-  geom_point(colour = "darkblue") +
-  labs(title = "Grafico de income_class vs life_ladder",
-       x = "income_class", 
-       y ="life_ladder") +
-  theme_minimal()
-
-plot_a
-plot_b
-plot_c
-ggsave("docs/segundos_graficos/life_variacion.png", plot = plot_a)
-ggsave("docs/segundos_graficos/gdp_life.png", plot = plot_b)
-ggsave("docs/segundos_graficos/income_life.png", plot = plot_c)
-```
-
-# Análisis de comportamientos
-
-## Visualización en curva de la variable life_ladder
-
-```{r}
-ggplot(Data_relevante, aes(x = life_ladder)) +
   geom_histogram(aes(y = after_stat(density), fill = "Histograma"), 
                  color = "black", bins = 30) +
   geom_density(aes(fill = "Densidad"), 
@@ -325,7 +268,8 @@ ggplot(Data_relevante, aes(x = life_ladder)) +
                                         mean = mean(Data_relevante$life_ladder),
                                         sd = sd(Data_relevante$life_ladder)),
                 aes(color = "Normal con parámetros de life_ladder"),
-                linewidth = 1.5) + 
+                linewidth = 1.5,
+                alpha = 0.5) + 
   labs(title = "Histograma de life_ladder",
        x = "Valores", 
        y = "Densidad",
@@ -336,9 +280,102 @@ ggplot(Data_relevante, aes(x = life_ladder)) +
   scale_color_manual(values = c("darkorange3")) +
   theme_minimal() + 
   theme(legend.position = 'bottom')
-
   
+plot_b <- ggscatter(
+  Data_relevante,
+  x = "log_gdp_per_capita", 
+  y = "life_ladder",
+  add = "reg.line", 
+  cor.coef = TRUE, 
+  conf.int = TRUE,
+  cor.method = "pearson", 
+  cor.coeff.args = list(label.sep = "\n"), 
+  color = "darkred",
+  add.params = list(color = "gray20"),  
+  title = "Gráfico de log_gdp_per_capita vs life_ladder",
+  xlab = "log_gdp_per_capita",
+  ylab = "life_ladder") +
+  theme_minimal() +
+  ylim(0,8)
+
+plot_c <- ggplot(Data_relevante, aes(group = income_class,
+                           x = income_class,
+                           y = life_ladder,
+                           fill = income_class)) +
+  geom_boxplot(staplewidth = 0.1) +
+  labs(title = "Grafico de income_class vs life_ladder",
+       x = "income_class", 
+       y ="life_ladder") +
+  theme_minimal()
+
+plot_d <- ggscatter(
+  Data_relevante, 
+  x = "electricity_access", 
+  y = "life_ladder",
+  add = "reg.line", 
+  cor.coef = TRUE, 
+  conf.int = TRUE,
+  cor.method = "pearson", 
+  cor.coeff.args = list(label.sep = "\n"), 
+  color = "darkred",
+  add.params = list(color = "gray20"),  
+  title = "Gráfico de electricity_access vs life_ladder",
+  xlab = "electricity_access",
+  ylab = "life_ladder") +
+  theme_minimal()
+
+plot_e <- ggscatter(
+  Data_relevante, 
+  x = "water_access", 
+  y = "life_ladder",
+  add = "reg.line", 
+  cor.coef = TRUE, 
+  conf.int = TRUE,
+  cor.method = "pearson", 
+  cor.coeff.args = list(label.sep = "\n"), 
+  color = "darkred",
+  add.params = list(color = "gray20"),  
+  title = "Gráfico de water_access vs life_ladder",
+  xlab = "water_access",
+  ylab = "life_ladder") +
+  theme_minimal()
+
+plot_f <- ggscatter(
+  Data_relevante, 
+  x = "cpi", 
+  y = "life_ladder",
+  add = "reg.line", 
+  cor.coef = TRUE, 
+  conf.int = TRUE,
+  cor.method = "pearson", 
+  cor.coeff.args = list(label.sep = "\n"), 
+  color = "darkred",
+  add.params = list(color = "gray20"),  
+  title = "Gráfico de cpi vs life_ladder",
+  xlab = "cpi",
+  ylab = "life_ladder") +
+  theme_minimal()
+
+# (life_ladder,
+# electricity_access,
+# water_access, 
+# income_class,
+# cpi,
+# log_gdp_per_capita)
+
+plot_a
+plot_b
+plot_c
+plot_d
+plot_e
+plot_f
+ggsave("docs/segundos_graficos/life_variacion.png", plot = plot_a)
+ggsave("docs/segundos_graficos/gdp_life.png", plot = plot_b)
+ggsave("docs/segundos_graficos/income_life.png", plot = plot_c)
 ```
+
+
+# Análisis de comportamientos
 
 ## Shapiro test
 
@@ -367,26 +404,22 @@ res$estimate
 ## Gráficos relevantes
 
 ```{r}
-# Realizar cada uno de los gráficos 
-grafico_a <- ggscatter(Data_relevante, x = "log_gdp_per_capita", y = "life_ladder", 
-               add = "reg.line", conf.int = TRUE, 
-               cor.coef = TRUE, cor.method = "pearson",
-               title = "Gráfico de log_gdp_per_capita vs life_ladder",
-               xlab = "log_gdp_per_capita", 
-               ylab = "life_ladder") + 
-  theme_minimal()
 grafico_b <- ggqqplot(Data_relevante$life_ladder, ylab = "life_ladder") +
-  labs(title = "Gráfico cuantil de life_ladder")
+  labs(title = "Gráfico de cuantiles de life_ladder") +
+  theme_minimal() +
+  ylim(0,10)
 grafico_c <- ggqqplot(Data_relevante$log_gdp_per_capita, ylab = "log_gdp_per_capita") +
-  labs(title = "Gráfico cuantil de log_gdp_per_capita")
+  labs(title = "Gráfico de cuantiles de log_gdp_per_capita") +
+  theme_minimal() +
+  ylim(0,15)
+
 
 # Mostrarlos
-grafico_a
+
 grafico_b
 grafico_c
 
 # Guardarlos
-ggsave("docs/terceros_graficos/plot_Aa.png", plot = grafico_a, limitsize = FALSE)
 ggsave("docs/terceros_graficos/plot_Ab.png", plot = grafico_b, limitsize = FALSE)
 ggsave("docs/terceros_graficos/plot_Ac.png", plot = grafico_c, limitsize = FALSE)
 ```
