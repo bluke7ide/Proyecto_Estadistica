@@ -97,7 +97,7 @@ Tabla_Felicidad_Reducida <- Tabla_Felicidad[
 
 Tabla_Felicidad_Promedio <- Tabla_Felicidad_Reducida %>%
   group_by(`Country name`) %>%
-  summarise(across(where(is.numeric), mean, na.rm = TRUE))
+  summarise(across(where(is.numeric), ~ mean(.x, na.rm = TRUE)))
 
 Tabla_Felicidad_Promedio <- Tabla_Felicidad_Promedio %>%
   select(-year)
@@ -316,14 +316,14 @@ ggsave("docs/segundos_graficos/income_life.png", plot = plot_c)
 
 ```{r}
 ggplot(Data_relevante, aes(x = life_ladder)) +
-  geom_histogram(aes(y = ..density.., fill = "Histograma"), 
-                 color = "black") +
+  geom_histogram(aes(y = after_stat(density), fill = "Histograma"), 
+                 color = "black", bins = 30) +
   geom_density(aes(fill = "Densidad"), 
                color = "royalblue", 
                alpha = 0.4) +
   geom_function(fun = function(t) dnorm(x = t,
                                         mean = mean(Data_relevante$life_ladder),
-                                        sd = sd_ld),
+                                        sd = sd(Data_relevante$life_ladder)),
                 aes(color = "Normal con parámetros de life_ladder"),
                 linewidth = 1.5) + 
   labs(title = "Histograma de life_ladder",
