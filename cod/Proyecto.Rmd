@@ -18,7 +18,6 @@ output:
 knitr::opts_knit$set(root.dir = rprojroot::find_rstudio_root_file())
 ```
 
-
 # Librerias
 
 ```{r, warning=FALSE, message=FALSE}
@@ -30,7 +29,7 @@ knitr::opts_knit$set(root.dir = rprojroot::find_rstudio_root_file())
 # install.packages("ggplot2")
 # install.packages("corrplot")
 # install.packages("ggpubr")
-# install.packages('xlsx')     
+# install.packages('xlsx')
   
 library(ggpubr)
 library(zoo)
@@ -58,8 +57,11 @@ Tabla_Felicidad <- read_excel("data/DataForTable2.1 (1).xls")
 ```
 
 # Análisis descriptivo
+
 ## Resumen
+
 Se obtiene un summary de la base de datos principal
+
 ```{r}
 summary(World_Data)
 ```
@@ -109,6 +111,7 @@ World_Data_2 <- World_Data_2 %>%
 ```
 
 ### Mezcla de las dos bases de datos
+
 Se unen los dos df, realizando una comparacion entre country y Country name, ademas se omiten los paises que no cuentan con una entrada en Tabla_Felicidad_Promedio
 
 ```{r}
@@ -118,8 +121,8 @@ World_Data_3 <- merge(World_Data_2,
                       by.y = "Country name")
 ```
 
-
 ### Segunda limpieza NA
+
 Se decide reemplazar los valores N/A presentes en distintas entradas por el promedio de la variable. Se van a contar los N/A presentedes en la base de datos para asegurar de que no haya ninguno, además se va a realizar un summary de esta. Como se explico de forma previa la existencia de valores N/A es debido a que no todos los paises reportan todos los años a las tres entidades de las cuales se obtienen los datos, esto debido a las distintas dinamicas geo-socio-politicas que se desarrollan en las distintas divisiones geograficas del mundo, asi como la calidad de las relaciones que existe entre los paises, o situaciones de guerra o crisis.
 
 ```{r}
@@ -133,8 +136,8 @@ World_Data_3_Resumen = descr(World_Data_3)
 write.xlsx(World_Data_3_Resumen, "docs/Estadisticas_Descriptivas.xlsx", row.names = TRUE)
 ```
 
-
 ### Transformación de la columna income_class
+
 En la estructura que presenta "World_Data_3" se puede observar que cada variable va en una columna, no existe una combinación de distintas variables en la misma columna. A su vez cada observación es unica y sus valores estan distribuidos a lo largo de una unica fila Existe un identificador o key claro para cada una de las entradas, en este caso corresponde a la columna "country" que indica el país. Además queremos que todas las variables manejen valores numericos, asi que se va a reemplazar los valores de "income_class" por su factor, para de esta forma tener unicamente variables numericas. Ahora lo que vamos a realizar es un analisis descriptivo completo de la tabla, la forma mas sencilla de empezar este proceso es mediante la funcion "summary()", la cual me permite obtener distintos estadísticos de la tabla en cuestión. Se procede a utilizar dicha funcion.
 
 ```{r}
@@ -150,20 +153,22 @@ str(World_Data_3)
 ```
 
 ### Haciendo las columnas en formato tidy
+
 ```{r}
 colnames(World_Data_3) <- tolower(gsub(" ", "_", colnames(World_Data_3)))
 summary(World_Data_3)
 ```
 
 ### Eliminar la columna país
+
 Además vamos a eliminar la columna de país, ya que queremos conseguir una correlación entre las distintas variables, esta no aporta utilidad en una escala mayor.
 
 ```{r}
 Data_trabajar <- subset(World_Data_3, select = -country)
 ```
 
-
 ## Correlaciones
+
 Con la data estructurada de la forma adecuada, podemos empezamos a buscar la relación existente entre los distintos marcadores con respecto a nuestro variable objetivo, en este caso life_ladder. De la matriz de covarianza, podemos encontrar que tanta relación existe entre las distintas variables que forman la tabla, de forma que va a ser mas sencillo visualizar en que variables concentrar el estudio. Asi como la de correlacion, ya que al estar normalizada con valores que van desde -1 hasta 1, resulta mas sencilla observar las relaciones existentes
 
 ```{r}
@@ -186,14 +191,15 @@ dev.off()
 ```
 
 ## Estadísticas descriptivas
+
 Además se van a conseguir varios marcadores estadisticos con el fin de tener un entendimiento más completo de los datos y como estos se comportan de forma individual
+
 ```{r}
 Tabla_stats = stat.desc(Data_trabajar)
 Tabla_descripcion = descr(Data_trabajar)
 Df_resumen = dfSummary(Data_trabajar)
 
 ```
-
 
 ## Graficar las variables
 
@@ -211,10 +217,10 @@ for(var in variables) {
 
 ```
 
-
 ## Selección de variables relevantes
 
 Ahora que tenemos el plot de correlacion, seleccionamos las variables relevantes para el estudio, asi que creamos un nuevo data frame unicamente con las variables importantes.
+
 ```{r}
 Data_relevante = Data_trabajar %>% select (life_ladder,
                                            electricity_access,
@@ -227,7 +233,9 @@ Data_relevante = Data_trabajar %>% select (life_ladder,
 ```
 
 ## Descripción de variables relevantes
+
 Vamos a realizar varios estadísticos breves para las variables escogidas
+
 ```{r}
 life_ladder_table <- data.frame(
   Measure = c("Minimum", "1st Quartile", "Median", "Mean", "3rd Quartile", "Maximum", "Standard Deviation"),
@@ -244,6 +252,7 @@ print(life_ladder_table)
 ```
 
 ## Resumen de la variable log_gdp_per_capita
+
 ```{r}
 log_gdp_summary <- summary(Data_trabajar$log_gdp_per_capita)
 
@@ -264,7 +273,9 @@ write.xlsx(Descripcion_relevante, "docs/Descripcion_relevante.xlsx", row.names =
 ```
 
 ## Gráfico de los datos selectos
+
 Se van a desarrollar graficos con el fin de estudiar el comportamiento de los datos selectos
+
 ```{r, warning=FALSE}
 
 
@@ -298,9 +309,11 @@ ggsave("docs/segundos_graficos/life_variacion.png", plot = plot_a)
 ggsave("docs/segundos_graficos/gdp_life.png", plot = plot_b)
 ggsave("docs/segundos_graficos/income_life.png", plot = plot_c)
 ```
+
 # Análisis de comportamientos
 
 ## Visualización en curva de la variable life_ladder
+
 ```{r}
 ggplot(Data_relevante, aes(x = life_ladder)) +
   geom_histogram(aes(y = ..density.., fill = "Histograma"), 
@@ -308,8 +321,10 @@ ggplot(Data_relevante, aes(x = life_ladder)) +
   geom_density(aes(fill = "Densidad"), 
                color = "royalblue", 
                alpha = 0.4) +
-  geom_function(fun = function(t) dnorm(x = t, mean = 5.5, sd = 1.2),
-                aes(color = "Normal(5.5,1.2)"),
+  geom_function(fun = function(t) dnorm(x = t,
+                                        mean = mean(Data_relevante$life_ladder),
+                                        sd = sd_ld),
+                aes(color = "Normal con parámetros de life_ladder"),
                 linewidth = 1.5) + 
   labs(title = "Histograma de life_ladder",
        x = "Valores", 
@@ -325,8 +340,8 @@ ggplot(Data_relevante, aes(x = life_ladder)) +
   
 ```
 
-
 ## Shapiro test
+
 ```{r}
 # Obtenemos la correlación utilizando distintos metodos, en este caso Pearson, Kendall y Spearman, vamos a concentrarnos en Pearson, pero los otros metodos nos permite tener una idea mas clara del comportamiento de los datos.
 cor(Data_relevante$log_gdp_per_capita,
@@ -350,6 +365,7 @@ res$estimate
 ```
 
 ## Gráficos relevantes
+
 ```{r}
 # Realizar cada uno de los gráficos 
 grafico_a <- ggscatter(Data_relevante, x = "log_gdp_per_capita", y = "life_ladder", 
@@ -374,7 +390,9 @@ ggsave("docs/terceros_graficos/plot_Aa.png", plot = grafico_a, limitsize = FALSE
 ggsave("docs/terceros_graficos/plot_Ab.png", plot = grafico_b, limitsize = FALSE)
 ggsave("docs/terceros_graficos/plot_Ac.png", plot = grafico_c, limitsize = FALSE)
 ```
+
 ## Método delta
+
 ```{r}
 # Obtenemos la variable de estudio
 X <- Data_relevante$life_ladder
