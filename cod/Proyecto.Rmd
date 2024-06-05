@@ -305,8 +305,9 @@ res$estimate
 # ggsave("plot_Ac.png", plot = c, limitsize = FALSE)
 ```
 
-Metodo Delta Multivariable
+# Metodo Delta Multivariable
 
+## log_gdp_per_capita
 ```{r}
 # Se establece la variable a predecir "life_ladder" y la predictora "log_gdp_per_capita"
 Y <- Data_relevante$life_ladder
@@ -337,5 +338,125 @@ funcion_g_prima <- 1/(1-cor^2)
 
 # TLC
 tlc <- sqrt(n) * (rn - cor) / (1 - cor^2)
+```
+
+## electricity_access
+```{r}
+# Se establece la variable a predecir "life_ladder" y la predictora "electricity_access"
+Y <- Data_relevante$life_ladder
+X <- Data_relevante$electricity_access
+XY <- X*Y
+X_2 <- X*X
+n <- length(Data_relevante$life_ladder)
+
+# Covarianza y varianzas
+valor_cov <- cov(X, Y)
+var_X <- var(X)
+var_Y <- var(Y)
+
+# Correlacion
+cor = valor_cov/(sqrt(var_X * var_Y))
+
+# Promedios
+XY_promedio <- mean(XY)
+X_promedio <- mean(X)
+Y_promedio <- mean(Y)
+X_2_promedio <- mean(X_2)
+
+rn <- (XY_promedio - X_promedio * Y_promedio) / (sqrt(X_2_promedio - X_promedio^2))
+
+# Funcion g
+funcion_g <- atan(cor)
+funcion_g_prima <- 1/(1-cor^2)
+
+# TLC
+tlc <- sqrt(n) * (rn - cor) / (1 - cor^2)
+```
+
+## water_access
+```{r}
+# Se establece la variable a predecir "life_ladder" y la predictora "water_access"
+Y <- Data_relevante$life_ladder
+X <- Data_relevante$water_access
+XY <- X*Y
+X_2 <- X*X
+n <- length(Data_relevante$life_ladder)
+
+# Covarianza y varianzas
+valor_cov <- cov(X, Y)
+var_X <- var(X)
+var_Y <- var(Y)
+
+# Correlacion
+cor = valor_cov/(sqrt(var_X * var_Y))
+
+# Promedios
+XY_promedio <- mean(XY)
+X_promedio <- mean(X)
+Y_promedio <- mean(Y)
+X_2_promedio <- mean(X_2)
+
+rn <- (XY_promedio - X_promedio * Y_promedio) / (sqrt(X_2_promedio - X_promedio^2))
+
+# Funcion g
+funcion_g <- atan(cor)
+funcion_g_prima <- 1/(1-cor^2)
+
+# TLC
+tlc <- sqrt(n) * (rn - cor) / (1 - cor^2)
+```
+
+## cpi
+```{r}
+# Se establece la variable a predecir "life_ladder" y la predictora "cpi"
+Y <- Data_relevante$life_ladder
+X <- Data_relevante$cpi
+XY <- X*Y
+X_2 <- X*X
+n <- length(Data_relevante$life_ladder)
+
+# Covarianza y varianzas
+valor_cov <- cov(X, Y)
+var_X <- var(X)
+var_Y <- var(Y)
+
+# Correlacion
+cor = valor_cov/(sqrt(var_X * var_Y))
+
+# Promedios
+XY_promedio <- mean(XY)
+X_promedio <- mean(X)
+Y_promedio <- mean(Y)
+X_2_promedio <- mean(X_2)
+
+rn <- (XY_promedio - X_promedio * Y_promedio) / (sqrt(X_2_promedio - X_promedio^2))
+
+# Funcion g
+funcion_g <- atan(cor)
+funcion_g_prima <- 1/(1-cor^2)
+
+# TLC
+tlc <- sqrt(n) * (rn - cor) / (1 - cor^2)
+```
+
+# Normalización
+
+Vamos a normalizar el comportamiento de la variable life_ladder, mediante el uso del Teorema del Límite Central
+
+```{r}
+# Obtenemos los parametros necesarios para conseguir la normal de life_ladder
+Y_promedio <- mean(Y)
+Y_sd <- sd(Y)
+
+Y_normalizada = dnorm(Y, Y_promedio, Y_sd)
+
+df_graficar <- data.frame(Life_Ladder = Y, Density = Y_normalizada)
+
+ggplot(df_graficar, aes(x = Life_Ladder, y = Density)) +
+  geom_point(color = "blue") +
+  labs(title = "life_ladder Normalizada",
+       x = "Life Ladder",
+       y = "Densidad") +
+  theme_minimal()
 ```
 
