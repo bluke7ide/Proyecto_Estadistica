@@ -281,7 +281,70 @@ plot_a <- ggplot(Data_relevante, aes(x = life_ladder)) +
   theme_minimal() + 
   theme(legend.position = 'bottom')
   
+
 plot_b <- ggscatter(
+  Data_relevante, 
+  x = "electricity_access", 
+  y = "life_ladder",
+  add = "reg.line", 
+  cor.coef = TRUE, 
+  conf.int = TRUE,
+  cor.method = "pearson", 
+  cor.coeff.args = list(label.sep = "\n"), 
+  color = "orange1",
+  add.params = list(color = "gray20"),  
+  title = "Gráfico de electricity_access vs life_ladder",
+  xlab = "electricity_access",
+  ylab = "life_ladder") +
+  theme_minimal() +
+  ylim(0,8)
+
+plot_c <- ggscatter(
+  Data_relevante, 
+  x = "water_access", 
+  y = "life_ladder",
+  add = "reg.line", 
+  cor.coef = TRUE, 
+  conf.int = TRUE,
+  cor.method = "pearson", 
+  cor.coeff.args = list(label.sep = "\n"), 
+  color = "darkorange",
+  add.params = list(color = "gray20"),  
+  title = "Gráfico de water_access vs life_ladder",
+  xlab = "water_access",
+  ylab = "life_ladder") +
+  theme_minimal() +
+  ylim(0,8)
+
+
+plot_d <- ggplot(Data_relevante, aes(group = income_class,
+                           x = income_class,
+                           y = life_ladder,
+                           fill = income_class)) +
+  geom_boxplot(staplewidth = 0.1) +
+  labs(title = "Grafico de income_class vs life_ladder",
+       x = "income_class", 
+       y ="life_ladder") +
+  theme_minimal()
+
+plot_e <- ggscatter(
+  Data_relevante, 
+  x = "cpi", 
+  y = "life_ladder",
+  add = "reg.line", 
+  cor.coef = TRUE, 
+  conf.int = TRUE,
+  cor.method = "pearson", 
+  cor.coeff.args = list(label.sep = "\n"), 
+  color = "orangered",
+  add.params = list(color = "gray20"),  
+  title = "Gráfico de cpi vs life_ladder",
+  xlab = "cpi",
+  ylab = "life_ladder") +
+  theme_minimal() +
+  ylim(0,8)
+
+plot_f <- ggscatter(
   Data_relevante,
   x = "log_gdp_per_capita", 
   y = "life_ladder",
@@ -298,64 +361,6 @@ plot_b <- ggscatter(
   theme_minimal() +
   ylim(0,8)
 
-plot_c <- ggplot(Data_relevante, aes(group = income_class,
-                           x = income_class,
-                           y = life_ladder,
-                           fill = income_class)) +
-  geom_boxplot(staplewidth = 0.1) +
-  labs(title = "Grafico de income_class vs life_ladder",
-       x = "income_class", 
-       y ="life_ladder") +
-  theme_minimal()
-
-plot_d <- ggscatter(
-  Data_relevante, 
-  x = "electricity_access", 
-  y = "life_ladder",
-  add = "reg.line", 
-  cor.coef = TRUE, 
-  conf.int = TRUE,
-  cor.method = "pearson", 
-  cor.coeff.args = list(label.sep = "\n"), 
-  color = "darkred",
-  add.params = list(color = "gray20"),  
-  title = "Gráfico de electricity_access vs life_ladder",
-  xlab = "electricity_access",
-  ylab = "life_ladder") +
-  theme_minimal()
-
-plot_e <- ggscatter(
-  Data_relevante, 
-  x = "water_access", 
-  y = "life_ladder",
-  add = "reg.line", 
-  cor.coef = TRUE, 
-  conf.int = TRUE,
-  cor.method = "pearson", 
-  cor.coeff.args = list(label.sep = "\n"), 
-  color = "darkred",
-  add.params = list(color = "gray20"),  
-  title = "Gráfico de water_access vs life_ladder",
-  xlab = "water_access",
-  ylab = "life_ladder") +
-  theme_minimal()
-
-plot_f <- ggscatter(
-  Data_relevante, 
-  x = "cpi", 
-  y = "life_ladder",
-  add = "reg.line", 
-  cor.coef = TRUE, 
-  conf.int = TRUE,
-  cor.method = "pearson", 
-  cor.coeff.args = list(label.sep = "\n"), 
-  color = "darkred",
-  add.params = list(color = "gray20"),  
-  title = "Gráfico de cpi vs life_ladder",
-  xlab = "cpi",
-  ylab = "life_ladder") +
-  theme_minimal()
-
 # (life_ladder,
 # electricity_access,
 # water_access, 
@@ -369,12 +374,13 @@ plot_c
 plot_d
 plot_e
 plot_f
-ggsave("docs/segundos_graficos/life_variacion.png", plot = plot_a)
-ggsave("docs/segundos_graficos/gdp_life.png", plot = plot_b)
-ggsave("docs/segundos_graficos/income_life.png", plot = plot_c)
+ggsave("docs/segundos_graficos/life_ladder.png", plot = plot_a)
+ggsave("docs/segundos_graficos/elec_life.png", plot = plot_b)
+ggsave("docs/segundos_graficos/water_life.png", plot = plot_c)
+ggsave("docs/segundos_graficos/income_life.png", plot = plot_d)
+ggsave("docs/segundos_graficos/cpi_life.png", plot = plot_e)
+ggsave("docs/segundos_graficos/lgdp_life.png", plot = plot_f)
 ```
-
-
 # Análisis de comportamientos
 
 ## Shapiro test
