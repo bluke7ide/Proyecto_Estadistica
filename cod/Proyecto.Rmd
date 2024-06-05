@@ -147,8 +147,8 @@ write.xlsx(as.data.frame(cov(Data_trabajar)),
 write.xlsx(as.data.frame(cor(Data_trabajar)),
            "docs/Correlacion.xlsx", row.names = TRUE)
 
-png("docs/primeros_graficos/correlaciones.png", width = 800, height = 800) 
-corrplot(cor(Data_trabajar), method = "circle", tl.cex = 1)
+pdf("docs/primeros_graficos/correlaciones.pdf") 
+corrplot(cor(Data_trabajar), method = "circle", tl.cex = 0.5)
 dev.off()
 
 corrplot(cor(Data_trabajar), method = "circle", tl.cex = 0.5)
@@ -324,12 +324,12 @@ plot_c
 plot_d
 plot_e
 plot_f
-ggsave("docs/segundos_graficos/life_ladder.png", plot = plot_a)
-ggsave("docs/segundos_graficos/elec_life.png", plot = plot_b)
-ggsave("docs/segundos_graficos/water_life.png", plot = plot_c)
-ggsave("docs/segundos_graficos/income_life.png", plot = plot_d)
-ggsave("docs/segundos_graficos/cpi_life.png", plot = plot_e)
-ggsave("docs/segundos_graficos/lgdp_life.png", plot = plot_f)
+ggsave("docs/segundos_graficos/life_ladder.pdf", plot = plot_a)
+ggsave("docs/segundos_graficos/elec_life.pdf", plot = plot_b)
+ggsave("docs/segundos_graficos/water_life.pdf", plot = plot_c)
+ggsave("docs/segundos_graficos/income_life.pdf", plot = plot_d)
+ggsave("docs/segundos_graficos/cpi_life.pdf", plot = plot_e)
+ggsave("docs/segundos_graficos/lgdp_life.pdf", plot = plot_f)
 ```
 
 # Análisis de comportamientos
@@ -357,7 +357,6 @@ res$estimate
 ```
 
 ## Gráficos relevantes
-
 ```{r}
 grafico_b <- ggqqplot(Data_relevante$life_ladder, ylab = "life_ladder") +
   labs(title = "Gráfico de cuantiles de life_ladder") +
@@ -370,7 +369,6 @@ grafico_c <- ggqqplot(Data_relevante$log_gdp_per_capita, ylab = "log_gdp_per_cap
 
 
 # Mostrarlos
-
 grafico_b
 grafico_c
 
@@ -526,10 +524,36 @@ Y_normalizada = dnorm(Y, Y_promedio, Y_sd)
 df_graficar <- data.frame(Life_Ladder = Y, Density = Y_normalizada)
 
 ggplot(df_graficar, aes(x = Life_Ladder, y = Density)) +
+  geom_line(color = "blue") +
   geom_point(color = "blue") +
   labs(title = "life_ladder Normalizada",
        x = "Life Ladder",
        y = "Densidad") +
   theme_minimal()
+```
+
+```{r}
+ystd <- data.frame(norm = (Y - Y_promedio)/Y_sd)
+
+ggplot(ystd, aes(x = norm)) +
+  geom_histogram(aes(y = after_stat(density), fill = "Histograma"), 
+                 color = "black", bins = 30) +
+  geom_density(aes(fill = "Densidad"), 
+               color = "royalblue", 
+               alpha = 0.4) +
+  geom_function(fun = dnorm,
+                aes(color = "Normal(0,1)"),
+                linewidth = 1.5,
+                alpha = 0.5) + 
+  labs(title = "Histograma de life_ladder estandarizada ",
+       x = "Valores", 
+       y = "Densidad",
+       color = " ",
+       fill = " ") +
+  scale_fill_manual(values = c("blue", "lightblue")) +
+  scale_color_manual(values = c("darkorange3")) +
+  xlim(-3,3) +
+  theme_minimal() + 
+  theme(legend.position = 'bottom')
 ```
 
