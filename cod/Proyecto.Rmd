@@ -338,6 +338,17 @@ funcion_g_prima <- 1/(1-cor^2)
 
 # TLC
 tlc <- sqrt(n) * (rn - cor) / (1 - cor^2)
+
+# Tabla con resultados
+# Create the data frame
+Tabla_Resultados <- data.frame(
+  "Predictor" = "log_gdp_per_capita",
+  "Correlación" = cor,
+  "Coeficiente de Regresión" = rn
+)
+
+# Display the table
+print(Tabla_Resultados)
 ```
 
 ## electricity_access
@@ -371,6 +382,12 @@ funcion_g_prima <- 1/(1-cor^2)
 
 # TLC
 tlc <- sqrt(n) * (rn - cor) / (1 - cor^2)
+
+Tabla_Resultados <- rbind(Tabla_Resultados, data.frame(
+  "Predictor" = "electricity_access",
+  "Correlación" = cor,
+  "Coeficiente de Regresión" = rn
+))
 ```
 
 ## water_access
@@ -404,6 +421,12 @@ funcion_g_prima <- 1/(1-cor^2)
 
 # TLC
 tlc <- sqrt(n) * (rn - cor) / (1 - cor^2)
+
+Tabla_Resultados <- rbind(Tabla_Resultados, data.frame(
+  "Predictor" = "water_access",
+  "Correlación" = cor,
+  "Coeficiente de Regresión" = rn
+))
 ```
 
 ## cpi
@@ -437,6 +460,12 @@ funcion_g_prima <- 1/(1-cor^2)
 
 # TLC
 tlc <- sqrt(n) * (rn - cor) / (1 - cor^2)
+
+Tabla_Resultados <- rbind(Tabla_Resultados, data.frame(
+  "Predictor" = "cpi",
+  "Correlación" = cor,
+  "Coeficiente de Regresión" = rn
+))
 ```
 
 # Normalización
