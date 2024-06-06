@@ -382,6 +382,7 @@ ggsave("docs/terceros_graficos/plot_Ac.png", plot = grafico_c, limitsize = FALSE
 ```
 
 # Metodo Delta Multivariable
+
 ## log_gdp_per_capita
 ```{r}
 # Se establece la variable a predecir "life_ladder" y la predictora "log_gdp_per_capita"
@@ -390,13 +391,6 @@ X <- Data_relevante$log_gdp_per_capita
 XY <- X*Y
 X_2 <- X*X
 n <- length(Data_relevante$life_ladder)
-
-# Ajuste del modelo de regresión lineal
-modelo <- lm(Y ~ X)
-
-# Coeficiente de regresión y su intervalo de confianza
-coef_regresion <- coef(modelo)["X"]
-conf_int <- confint(modelo, "X", level = 0.95)
 
 # Covarianza y varianzas
 valor_cov <- cov(X, Y)
@@ -421,14 +415,22 @@ funcion_g_prima <- 1/(1-cor^2)
 # TLC
 tlc <- sqrt(n) * (rn - cor) / (1 - cor^2)
 
+# Transformación de Fisher
+z = funcion_g
+sd_z <- 1 / sqrt(n - 3)
+
+z_conf_int <- z + c(-1, 1) * qnorm(0.975) * sd_z
+cor_conf_int <- (exp(2 * z_conf_int) - 1) / (exp(2 * z_conf_int) + 1)
+
+rm(Tabla_Resultados)
 # Tabla con resultados
 # Create the data frame
 Tabla_Resultados <- data.frame(
   "Predictor" = "log_gdp_per_capita",
   "Correlación" = cor,
   "Coeficiente de Regresión" = rn,
-  "IC Inferior" = conf_int[1],
-  "IC Superior" = conf_int[2]
+  "IC Inferior Correlación" = cor_conf_int[1],
+  "IC Superior Correlación" = cor_conf_int[2]
 )
 ```
 
@@ -441,13 +443,6 @@ XY <- X*Y
 X_2 <- X*X
 n <- length(Data_relevante$life_ladder)
 
-# Ajuste del modelo de regresión lineal
-modelo <- lm(Y ~ X)
-
-# Coeficiente de regresión y su intervalo de confianza
-coef_regresion <- coef(modelo)["X"]
-conf_int <- confint(modelo, "X", level = 0.95)
-
 # Covarianza y varianzas
 valor_cov <- cov(X, Y)
 var_X <- var(X)
@@ -471,12 +466,20 @@ funcion_g_prima <- 1/(1-cor^2)
 # TLC
 tlc <- sqrt(n) * (rn - cor) / (1 - cor^2)
 
+# Transformación de Fisher
+z = funcion_g
+sd_z <- 1 / sqrt(n - 3)
+
+z_conf_int <- z + c(-1, 1) * qnorm(0.975) * sd_z
+cor_conf_int <- (exp(2 * z_conf_int) - 1) / (exp(2 * z_conf_int) + 1)
+
+
 Tabla_Resultados <- rbind(Tabla_Resultados, data.frame(
   "Predictor" = "electricity_access",
   "Correlación" = cor,
   "Coeficiente de Regresión" = rn,
-  "IC Inferior" = conf_int[1],
-  "IC Superior" = conf_int[2]
+  "IC Inferior Correlación" = cor_conf_int[1],
+  "IC Superior Correlación" = cor_conf_int[2]
 ))
 ```
 
@@ -489,13 +492,6 @@ XY <- X*Y
 X_2 <- X*X
 n <- length(Data_relevante$life_ladder)
 
-# Ajuste del modelo de regresión lineal
-modelo <- lm(Y ~ X)
-
-# Coeficiente de regresión y su intervalo de confianza
-coef_regresion <- coef(modelo)["X"]
-conf_int <- confint(modelo, "X", level = 0.95)
-
 # Covarianza y varianzas
 valor_cov <- cov(X, Y)
 var_X <- var(X)
@@ -519,12 +515,22 @@ funcion_g_prima <- 1/(1-cor^2)
 # TLC
 tlc <- sqrt(n) * (rn - cor) / (1 - cor^2)
 
+# Transformación de Fisher
+z = funcion_g
+sd_z <- 1 / sqrt(n - 3)
+
+z_conf_int <- z + c(-1, 1) * qnorm(0.975) * sd_z
+cor_conf_int <- (exp(2 * z_conf_int) - 1) / (exp(2 * z_conf_int) + 1)
+
+
 Tabla_Resultados <- rbind(Tabla_Resultados, data.frame(
   "Predictor" = "water_access",
   "Correlación" = cor,
   "Coeficiente de Regresión" = rn,
   "IC Inferior" = conf_int[1],
-  "IC Superior" = conf_int[2]
+  "IC Superior" = conf_int[2],
+  "IC Inferior Correlación" = cor_conf_int[1],
+  "IC Superior Correlación" = cor_conf_int[2]
 ))
 ```
 
@@ -537,13 +543,6 @@ XY <- X*Y
 X_2 <- X*X
 n <- length(Data_relevante$life_ladder)
 
-# Ajuste del modelo de regresión lineal
-modelo <- lm(Y ~ X)
-
-# Coeficiente de regresión y su intervalo de confianza
-coef_regresion <- coef(modelo)["X"]
-conf_int <- confint(modelo, "X", level = 0.95)
-
 # Covarianza y varianzas
 valor_cov <- cov(X, Y)
 var_X <- var(X)
@@ -567,12 +566,19 @@ funcion_g_prima <- 1/(1-cor^2)
 # TLC
 tlc <- sqrt(n) * (rn - cor) / (1 - cor^2)
 
+# Transformación de Fisher
+z = funcion_g
+
+z_conf_int <- z + c(-1, 1) * qnorm(0.975) * 1 / sqrt(n - 3)
+cor_conf_int <- (exp(2 * z_conf_int) - 1) / (exp(2 * z_conf_int) + 1)
+
+
 Tabla_Resultados <- rbind(Tabla_Resultados, data.frame(
   "Predictor" = "cpi",
   "Correlación" = cor,
   "Coeficiente de Regresión" = rn,
-  "IC Inferior" = conf_int[1],
-  "IC Superior" = conf_int[2]
+  "IC Inferior Correlación" = cor_conf_int[1],
+  "IC Superior Correlación" = cor_conf_int[2]
 ))
 
 print(Tabla_Resultados)
