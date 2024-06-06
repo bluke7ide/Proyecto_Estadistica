@@ -346,23 +346,25 @@ shapiro.test(Data_relevante$log_gdp_per_capita)
 
 ## Gráficos relevantes
 ```{r}
-grafico_b <- ggqqplot(Data_relevante$life_ladder, ylab = "life_ladder") +
+qqplots_a <- ggqqplot(Data_relevante$life_ladder, 
+                      ylab = "life_ladder") +
   labs(title = "Gráfico de cuantiles de life_ladder") +
   theme_minimal() +
-  ylim(0,10)
-grafico_c <- ggqqplot(Data_relevante$log_gdp_per_capita, ylab = "log_gdp_per_capita") +
+  ylim(0, 10) +
+  geom_qq(colour = "mediumseagreen")
+
+qqplots_b <- ggqqplot(Data_relevante$log_gdp_per_capita, 
+                      ylab = "life_ladder") +
   labs(title = "Gráfico de cuantiles de log_gdp_per_capita") +
   theme_minimal() +
-  ylim(0,15)
+  ylim(0, 15) +
+  geom_qq(colour = "#006400")
 
+qqplots_a
+qqplots_b
 
-# Mostrarlos
-grafico_b
-grafico_c
-
-# Guardarlos
-ggsave("docs/terceros_graficos/plot_Ab.png", plot = grafico_b, limitsize = FALSE)
-ggsave("docs/terceros_graficos/plot_Ac.png", plot = grafico_c, limitsize = FALSE)
+ggsave("docs/terceros_graficos/qqp_life.pdf", plot = qqplots_a, limitsize = FALSE)
+ggsave("docs/terceros_graficos/qqp_lgdp.pdf", plot = qqplots_b, limitsize = FALSE)
 ```
 
 # Metodo Delta Multivariable
