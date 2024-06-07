@@ -38,7 +38,7 @@ library(pastecs)
 library(summarytools)
 library(ggplot2)
 library(corrplot)
-#library(xlsx)
+library(openxlsx)
 library(knitr)
 ```
 
@@ -397,7 +397,7 @@ X_2_promedio <- mean(X_2)
 rn <- (XY_promedio - X_promedio * Y_promedio) / (sqrt(X_2_promedio - X_promedio^2))
 
 # Funcion g
-funcion_g <- atan(cor)
+funcion_g <- tan(cor)
 funcion_g_prima <- 1/(1-cor^2)
 
 # TLC
@@ -407,7 +407,7 @@ tlc <- sqrt(n) * (rn - cor) / (1 - cor^2)
 z = funcion_g
 sd_z <- 1 / sqrt(n - 3)
 
-z_conf_int <- z + c(-1, 1) * qnorm(0.975) * sd_z
+z_conf_int <- z + c(-1, 1) * qnorm(0.975, mean = 0, sd = 1) * sd_z
 cor_conf_int <- (exp(2 * z_conf_int) - 1) / (exp(2 * z_conf_int) + 1)
 
 rm(Tabla_Resultados)
@@ -420,6 +420,7 @@ Tabla_Resultados <- data.frame(
   "IC Inferior Correlación" = cor_conf_int[1],
   "IC Superior Correlación" = cor_conf_int[2]
 )
+
 ```
 
 ## electricity_access
@@ -448,7 +449,7 @@ X_2_promedio <- mean(X_2)
 rn <- (XY_promedio - X_promedio * Y_promedio) / (sqrt(X_2_promedio - X_promedio^2))
 
 # Funcion g
-funcion_g <- atan(cor)
+funcion_g <- tan(cor)
 funcion_g_prima <- 1/(1-cor^2)
 
 # TLC
@@ -458,7 +459,7 @@ tlc <- sqrt(n) * (rn - cor) / (1 - cor^2)
 z = funcion_g
 sd_z <- 1 / sqrt(n - 3)
 
-z_conf_int <- z + c(-1, 1) * qnorm(0.975) * sd_z
+z_conf_int <- z + c(-1, 1) * qnorm(0.975, 0, 1) * sd_z
 cor_conf_int <- (exp(2 * z_conf_int) - 1) / (exp(2 * z_conf_int) + 1)
 
 
@@ -469,6 +470,7 @@ Tabla_Resultados <- rbind(Tabla_Resultados, data.frame(
   "IC Inferior Correlación" = cor_conf_int[1],
   "IC Superior Correlación" = cor_conf_int[2]
 ))
+
 ```
 
 ## water_access
@@ -497,7 +499,7 @@ X_2_promedio <- mean(X_2)
 rn <- (XY_promedio - X_promedio * Y_promedio) / (sqrt(X_2_promedio - X_promedio^2))
 
 # Funcion g
-funcion_g <- atan(cor)
+funcion_g <- tan(cor)
 funcion_g_prima <- 1/(1-cor^2)
 
 # TLC
@@ -507,7 +509,7 @@ tlc <- sqrt(n) * (rn - cor) / (1 - cor^2)
 z = funcion_g
 sd_z <- 1 / sqrt(n - 3)
 
-z_conf_int <- z + c(-1, 1) * qnorm(0.975) * sd_z
+z_conf_int <- z + c(-1, 1) * qnorm(0.975, 0, 1) * sd_z
 cor_conf_int <- (exp(2 * z_conf_int) - 1) / (exp(2 * z_conf_int) + 1)
 
 
@@ -515,11 +517,10 @@ Tabla_Resultados <- rbind(Tabla_Resultados, data.frame(
   "Predictor" = "water_access",
   "Correlación" = cor,
   "Coeficiente de Regresión" = rn,
-  "IC Inferior" = conf_int[1],
-  "IC Superior" = conf_int[2],
   "IC Inferior Correlación" = cor_conf_int[1],
   "IC Superior Correlación" = cor_conf_int[2]
 ))
+
 ```
 
 ## cpi
@@ -548,7 +549,7 @@ X_2_promedio <- mean(X_2)
 rn <- (XY_promedio - X_promedio * Y_promedio) / (sqrt(X_2_promedio - X_promedio^2))
 
 # Funcion g
-funcion_g <- atan(cor)
+funcion_g <- tan(cor)
 funcion_g_prima <- 1/(1-cor^2)
 
 # TLC
@@ -557,7 +558,7 @@ tlc <- sqrt(n) * (rn - cor) / (1 - cor^2)
 # Transformación de Fisher
 z = funcion_g
 
-z_conf_int <- z + c(-1, 1) * qnorm(0.975) * 1 / sqrt(n - 3)
+z_conf_int <- z + c(-1, 1) * qnorm(0.975, 0, 1) * 1 / sqrt(n - 3)
 cor_conf_int <- (exp(2 * z_conf_int) - 1) / (exp(2 * z_conf_int) + 1)
 
 
