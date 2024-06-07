@@ -26,7 +26,7 @@ knitr::opts_knit$set(root.dir = rprojroot::find_rstudio_root_file())
 # install.packages("ggplot2")
 # install.packages("corrplot")
 # install.packages("ggpubr")
-# install.packages('xlsx')
+# install.packages('openxlsx')
 # install.packages('knitr')
 
 library(ggpubr)
