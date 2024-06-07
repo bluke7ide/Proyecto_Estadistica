@@ -616,6 +616,7 @@ Los gráficos nos permiten estudiar el comportamiento de distintos parametros de
 (4) Residuals vs Leverage: Identifica puntos influyentes
 
 A su vez el test de normalidad de Shapiro-Wilk de los residuos nos permite observar si se da un comportamiento Normal de los residuos.
+
 ## Normalización
 
 Vamos a normalizar el comportamiento de la variable life_ladder, mediante el uso del Teorema del Límite Central
