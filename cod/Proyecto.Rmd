@@ -432,6 +432,7 @@ Tabla_Resultados <- data.frame(
   "IC Inferior Correlación" = cor_conf_int[1],
   "IC Superior Correlación" = cor_conf_int[2]
 )
+
 ```
 
 ## electricity_access
@@ -481,6 +482,7 @@ Tabla_Resultados <- rbind(Tabla_Resultados, data.frame(
   "IC Inferior Correlación" = cor_conf_int[1],
   "IC Superior Correlación" = cor_conf_int[2]
 ))
+
 ```
 
 ## water_access
@@ -532,6 +534,7 @@ Tabla_Resultados <- rbind(Tabla_Resultados, data.frame(
   "IC Inferior Correlación" = cor_conf_int[1],
   "IC Superior Correlación" = cor_conf_int[2]
 ))
+
 ```
 
 ## cpi
