@@ -16,7 +16,6 @@ output:
 ```{r setup, include=FALSE}
 knitr::opts_knit$set(root.dir = rprojroot::find_rstudio_root_file())
 ```
-
 # Librerías
 ```{r, warning=FALSE, message=FALSE}
 # install.packages("zoo")
@@ -56,26 +55,26 @@ Tabla_Felicidad <- read_excel("data/DataForTable2.1 (1).xls")
 ```
 
 # Análisis descriptivo
-
 ## Resumen
 Se obtiene un summary de la base de datos principal
 ```{r}
 summary(World_Data)
+summary(Tabla_Felicidad)
 ```
 
 ## Limpieza de los datos
 ### Resumir la variable de año
 Los valores que presenta la tabla de World_Data utiliza promedios que van desde el rango del 2015 al 2018, por lo que para proceder a trabajar Tabla_Felicidad, se hace un promedio de las variables agrupando con los países y se elimina la variable de año. Además, se calcula el promedio y se genera una nueva tabla únicamente con los promedios de las distintas variables
 ```{r}
-Tabla_Felicidad_Reducida <- Tabla_Felicidad[
+Tabla_Felicidad_2 <- Tabla_Felicidad[
   Tabla_Felicidad$year >= 2015 & Tabla_Felicidad$year <= 2018, 
   ]
 
-Tabla_Felicidad_Promedio <- Tabla_Felicidad_Reducida %>%
+Tabla_Felicidad_2 <- Tabla_Felicidad_2 %>%
   group_by(`Country name`) %>%
   summarise(across(where(is.numeric), ~ mean(.x, na.rm = TRUE)))
 
-Tabla_Felicidad_Promedio <- Tabla_Felicidad_Promedio %>%
+Tabla_Felicidad_2 <- Tabla_Felicidad_2 %>%
   select(-year)
 ```
 
@@ -87,10 +86,10 @@ World_Data_2 <- World_Data_2 %>%
 ```
 
 ### Mezcla de las dos bases de datos
-Se unen los dos dataframes, realizando una comparación entre "country" y "Country name", ademas se omiten los países que no cuentan con una entrada en Tabla_Felicidad_Promedio
+Se unen los dos dataframes, realizando una comparación entre "country" y "Country name", ademas se omiten los países que no cuentan con una entrada en Tabla_Felicidad_2
 ```{r}
 World_Data_3 <- merge(World_Data_2,
-                      Tabla_Felicidad_Promedio,
+                      Tabla_Felicidad_2,
                       by.x = "country",
                       by.y = "Country name")
 ```
@@ -103,7 +102,9 @@ promedios <- sapply(World_Data_3,
 for (col in names(World_Data_3)) {
   World_Data_3[[col]][is.na(World_Data_3[[col]])] <- promedios[[col]]
 }
-(conteo_NA <- colSums(is.na(World_Data_3)))
+colSums(is.na(World_Data_3))
+rm(col)
+rm(promedios)
 ```
 
 Y se guarda el desc brevemente
@@ -149,8 +150,8 @@ write.xlsx(as.data.frame(cov(Data_trabajar)),
 write.xlsx(as.data.frame(cor(Data_trabajar)),
            "docs/Correlacion.xlsx", row.names = TRUE)
 
-png("docs/primeros_graficos/correlaciones.png", width = 800, height = 800) 
-corrplot(cor(Data_trabajar), method = "circle", tl.cex = 1)
+pdf("docs/primeros_graficos/correlaciones.pdf") 
+corrplot(cor(Data_trabajar), method = "circle", tl.cex = 0.5)
 dev.off()
 
 corrplot(cor(Data_trabajar), method = "circle", tl.cex = 0.5)
@@ -210,7 +211,8 @@ write.xlsx(log_gdp_table, "docs/log_gdp_table.xlsx", row.names = TRUE)
 Se van a desarrollar graficos con el fin de estudiar el comportamiento de los datos selectos
 
 ```{r, warning=FALSE, message=FALSE, echo=FALSE}
-plot_a <- ggplot(Data_relevante, aes(x = life_ladder)) +
+plots <- list()
+plots[[1]] <- ggplot(Data_relevante, aes(x = life_ladder)) +
   geom_histogram(aes(y = after_stat(density), fill = "Histograma"), 
                  color = "black", bins = 30) +
   geom_density(aes(fill = "Densidad"), 
@@ -233,8 +235,7 @@ plot_a <- ggplot(Data_relevante, aes(x = life_ladder)) +
   theme_minimal() + 
   theme(legend.position = 'bottom')
   
-
-plot_b <- ggscatter(
+plots[[2]] <- ggscatter(
   Data_relevante, 
   x = "electricity_access", 
   y = "life_ladder",
@@ -251,7 +252,7 @@ plot_b <- ggscatter(
   theme_minimal() +
   ylim(0,8)
 
-plot_c <- ggscatter(
+plots[[3]] <- ggscatter(
   Data_relevante, 
   x = "water_access", 
   y = "life_ladder",
@@ -269,7 +270,7 @@ plot_c <- ggscatter(
   ylim(0,8)
 
 
-plot_d <- ggplot(Data_relevante, aes(group = income_class,
+plots[[4]] <- ggplot(Data_relevante, aes(group = income_class,
                            x = income_class,
                            y = life_ladder,
                            fill = income_class)) +
@@ -279,7 +280,7 @@ plot_d <- ggplot(Data_relevante, aes(group = income_class,
        y ="life_ladder") +
   theme_minimal()
 
-plot_e <- ggscatter(
+plots[[5]] <- ggscatter(
   Data_relevante, 
   x = "cpi", 
   y = "life_ladder",
@@ -296,7 +297,7 @@ plot_e <- ggscatter(
   theme_minimal() +
   ylim(0,8)
 
-plot_f <- ggscatter(
+plots[[6]] <- ggscatter(
   Data_relevante,
   x = "log_gdp_per_capita", 
   y = "life_ladder",
@@ -313,72 +314,59 @@ plot_f <- ggscatter(
   theme_minimal() +
   ylim(0,8)
 
-# (life_ladder,
-# electricity_access,
-# water_access, 
-# income_class,
-# cpi,
-# log_gdp_per_capita)
+plots[[1]]
+plots[[2]]
+plots[[3]]
+plots[[4]]
+plots[[5]]
+plots[[6]]
 
-plot_a
-plot_b
-plot_c
-plot_d
-plot_e
-plot_f
-ggsave("docs/segundos_graficos/life_ladder.png", plot = plot_a)
-ggsave("docs/segundos_graficos/elec_life.png", plot = plot_b)
-ggsave("docs/segundos_graficos/water_life.png", plot = plot_c)
-ggsave("docs/segundos_graficos/income_life.png", plot = plot_d)
-ggsave("docs/segundos_graficos/cpi_life.png", plot = plot_e)
-ggsave("docs/segundos_graficos/lgdp_life.png", plot = plot_f)
+ggsave("docs/segundos_graficos/life_ladder.pdf", plot = plots[[1]])
+ggsave("docs/segundos_graficos/elec_life.pdf", plot = plots[[2]])
+ggsave("docs/segundos_graficos/water_life.pdf", plot = plots[[3]])
+ggsave("docs/segundos_graficos/income_life.pdf", plot = plots[[4]])
+ggsave("docs/segundos_graficos/cpi_life.pdf", plot = plots[[5]])
+ggsave("docs/segundos_graficos/lgdp_life.pdf", plot = plots[[6]])
+rm(plots)
 ```
 
 # Análisis de comportamientos
-## Shapiro test
+## Correlaciones y Shapiro test
 Obtenemos la correlación utilizando distintos métodos, en este caso Pearson, Kendall y Spearman, vamos a concentrarnos en Pearson, pero los otros métodos nos permite tener una idea mas clara del comportamiento de los datos.
 ```{r}
-cor(Data_relevante$log_gdp_per_capita,
-    Data_relevante$life_ladder,
-    method = c("pearson", "kendall", "spearman"))
-cor.test(Data_relevante$log_gdp_per_capita,
-         Data_relevante$life_ladder,
-         method=c("pearson", "kendall", "spearman"))
-
-# Prueba de normalidad Shapiro-Wilk de las variables
+res <- cor.test(Data_relevante$log_gdp_per_capita,
+                Data_relevante$life_ladder,
+                method=c("pearson", "kendall", "spearman"))
+print(paste("Valor-p: ",res$p.value))
+print(paste("correlación:", res$estimate))
+```
+Prueba de normalidad Shapiro-Wilk de las variables
+```{r}
 shapiro.test(Data_relevante$life_ladder) 
 shapiro.test(Data_relevante$log_gdp_per_capita)
-
-
-# Finalmente test de correlación de Pearson
-res <- cor.test(Data_relevante$log_gdp_per_capita, Data_relevante$life_ladder, 
-                    method = "pearson")
-res
-res$p.value
-res$estimate
 ```
 
 ## Gráficos relevantes
-
 ```{r}
-grafico_b <- ggqqplot(Data_relevante$life_ladder, ylab = "life_ladder") +
+qqplots_a <- ggqqplot(Data_relevante$life_ladder, 
+                      ylab = "life_ladder") +
   labs(title = "Gráfico de cuantiles de life_ladder") +
   theme_minimal() +
-  ylim(0,10)
-grafico_c <- ggqqplot(Data_relevante$log_gdp_per_capita, ylab = "log_gdp_per_capita") +
+  ylim(0, 10) +
+  geom_qq(colour = "mediumseagreen")
+
+qqplots_b <- ggqqplot(Data_relevante$log_gdp_per_capita, 
+                      ylab = "life_ladder") +
   labs(title = "Gráfico de cuantiles de log_gdp_per_capita") +
   theme_minimal() +
-  ylim(0,15)
+  ylim(0, 15) +
+  geom_qq(colour = "#006400")
 
+qqplots_a
+qqplots_b
 
-# Mostrarlos
-
-grafico_b
-grafico_c
-
-# Guardarlos
-ggsave("docs/terceros_graficos/plot_Ab.png", plot = grafico_b, limitsize = FALSE)
-ggsave("docs/terceros_graficos/plot_Ac.png", plot = grafico_c, limitsize = FALSE)
+ggsave("docs/terceros_graficos/qqp_life.pdf", plot = qqplots_a, limitsize = FALSE)
+ggsave("docs/terceros_graficos/qqp_lgdp.pdf", plot = qqplots_b, limitsize = FALSE)
 ```
 
 # Metodo Delta Multivariable
@@ -598,9 +586,36 @@ Y_normalizada = dnorm(Y, Y_promedio, Y_sd)
 df_graficar <- data.frame(Life_Ladder = Y, Density = Y_normalizada)
 
 ggplot(df_graficar, aes(x = Life_Ladder, y = Density)) +
+  geom_line(color = "blue") +
   geom_point(color = "blue") +
   labs(title = "life_ladder Normalizada",
        x = "Life Ladder",
        y = "Densidad") +
   theme_minimal()
 ```
+
+```{r}
+ystd <- data.frame(norm = (Y - Y_promedio)/Y_sd)
+
+ggplot(ystd, aes(x = norm)) +
+  geom_histogram(aes(y = after_stat(density), fill = "Histograma"), 
+                 color = "black", bins = 30) +
+  geom_density(aes(fill = "Densidad"), 
+               color = "royalblue", 
+               alpha = 0.4) +
+  geom_function(fun = dnorm,
+                aes(color = "Normal(0,1)"),
+                linewidth = 1.5,
+                alpha = 0.5) + 
+  labs(title = "Histograma de life_ladder estandarizada ",
+       x = "Valores", 
+       y = "Densidad",
+       color = " ",
+       fill = " ") +
+  scale_fill_manual(values = c("blue", "lightblue")) +
+  scale_color_manual(values = c("darkorange3")) +
+  xlim(-3,3) +
+  theme_minimal() + 
+  theme(legend.position = 'bottom')
+```
+
