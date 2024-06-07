@@ -38,7 +38,7 @@ library(pastecs)
 library(summarytools)
 library(ggplot2)
 library(corrplot)
-#library(xlsx)
+library(xlsx)
 library(knitr)
 ```
 
@@ -515,8 +515,6 @@ Tabla_Resultados <- rbind(Tabla_Resultados, data.frame(
   "Predictor" = "water_access",
   "Correlación" = cor,
   "Coeficiente de Regresión" = rn,
-  "IC Inferior" = conf_int[1],
-  "IC Superior" = conf_int[2],
   "IC Inferior Correlación" = cor_conf_int[1],
   "IC Superior Correlación" = cor_conf_int[2]
 ))
