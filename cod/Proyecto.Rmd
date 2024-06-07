@@ -110,7 +110,7 @@ rm(promedios)
 Y se guarda el desc brevemente
 ```{r}
 World_Data_3_Resumen = descr(World_Data_3)
-write.xlsx(World_Data_3_Resumen, "docs/Estadisticas_Descriptivas.xlsx", row.names = TRUE)
+write.xlsx(World_Data_3_Resumen, "docs/Estadisticas_Descriptivas.xlsx", rowNames = TRUE)
 ```
 
 ### Transformación de la columna income_class
@@ -146,9 +146,9 @@ summary(Data_trabajar)
 Con la data estructurada de la forma adecuada, podemos empezamos a buscar la relación existente entre los distintos marcadores con respecto a nuestro variable objetivo, en este caso "life_ladder". De la matriz de covarianza, podemos encontrar que tanta relación existe entre las distintas variables que forman la tabla, de forma que va a ser mas sencillo visualizar en que variables concentrar el estudio. Así como la de correlación, ya que al estar normalizada con valores que van desde -1 hasta 1, resulta mas sencilla observar las relaciones existentes. También se imprime el plot de correlaciones, ya que las dimensiones de Látex limitan la posibilidad de utilizar la matriz numérica.
 ```{r, message=FALSE, warning=FALSE, echo=FALSE}
 write.xlsx(as.data.frame(cov(Data_trabajar)),
-           "docs/Covarianza.xlsx", row.names = TRUE)
+           "docs/Covarianza.xlsx", rowNames = TRUE)
 write.xlsx(as.data.frame(cor(Data_trabajar)),
-           "docs/Correlacion.xlsx", row.names = TRUE)
+           "docs/Correlacion.xlsx", rowNames = TRUE)
 
 pdf("docs/primeros_graficos/correlaciones.pdf") 
 corrplot(cor(Data_trabajar), method = "circle", tl.cex = 0.5)
@@ -202,8 +202,8 @@ print(log_gdp_table)
 ```
 
 ```{r}
-write.xlsx(life_ladder_table, "docs/life_ladder_table.xlsx", row.names = TRUE)
-write.xlsx(log_gdp_table, "docs/log_gdp_table.xlsx", row.names = TRUE)
+write.xlsx(life_ladder_table, "docs/life_ladder_table.xlsx", rowNames = TRUE)
+write.xlsx(log_gdp_table, "docs/log_gdp_table.xlsx", rowNames = TRUE)
 ```
 
 ## Gráfico de los datos selectos
