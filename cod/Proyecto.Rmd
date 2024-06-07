@@ -206,9 +206,14 @@ write.xlsx(life_ladder_table, "docs/life_ladder_table.xlsx", rowNames = TRUE)
 write.xlsx(log_gdp_table, "docs/log_gdp_table.xlsx", rowNames = TRUE)
 ```
 
-## Gráfico de los datos selectos
 
-Se van a desarrollar graficos con el fin de estudiar el comportamiento de los datos selectos
+# Modelos y Análisis de comportamientos
+
+## Coeficiente de Correlación de Pearson
+
+### Gráfico de los datos selectos
+
+Se van a desarrollar graficos con el fin de estudiar el comportamiento de los datos selectos, además se agrega el coeficiente de correlación de Pearson para tener claro el nivel de relación existente entre las variables, además se calcula el valor p el cual nos permite realizar pruebas de hipotesis, en este caso establecer una correlación, en caso de ser menor al usual 0.05 aceptamos la correlación obtenida.
 
 ```{r, warning=FALSE, message=FALSE, echo=FALSE}
 plots <- list()
@@ -330,7 +335,8 @@ ggsave("docs/segundos_graficos/lgdp_life.pdf", plot = plots[[6]])
 rm(plots)
 ```
 
-# Análisis de comportamientos
+Con valores de p inferiores al 0.05 en todos los casos se acepta la hipotesis de que existe una correlación positiva entre los distintos marcadores del progreso socioeconomico (1) log_gdp_per_capita, (2) electricity_access, (3) water_access, (4) cpi, con respecto a la variable de estudio life_ladder
+
 ## Correlaciones y Shapiro test
 Obtenemos la correlación utilizando distintos métodos, en este caso Pearson, Kendall y Spearman, vamos a concentrarnos en Pearson, pero los otros métodos nos permite tener una idea mas clara del comportamiento de los datos.
 ```{r}
@@ -346,7 +352,7 @@ shapiro.test(Data_relevante$life_ladder)
 shapiro.test(Data_relevante$log_gdp_per_capita)
 ```
 
-## Gráficos relevantes
+### Gráficos relevantes
 ```{r}
 qqplots_a <- ggqqplot(Data_relevante$life_ladder, 
                       ylab = "life_ladder") +
@@ -369,9 +375,13 @@ ggsave("docs/terceros_graficos/qqp_life.pdf", plot = qqplots_a, limitsize = FALS
 ggsave("docs/terceros_graficos/qqp_lgdp.pdf", plot = qqplots_b, limitsize = FALSE)
 ```
 
-# Metodo Delta Multivariable
+En los gráficos se puede apreciar la forma en la que se distribuye las distribuciones y su relación con una distribución normal
 
-## log_gdp_per_capita
+## Metodo Delta Multivariable y Transformación Z de Fisher
+
+Para cada uno de los predictores siguientes se decide realizar el calculo de la covarianza y varianzas requeridas para obtener la correlación, además de esto se obtiene el coeficiente de regresión. Seguido de esto se realiza la transformación Z de Fisher para calcular los intervalos de confianza de la correlación obtenida.
+
+### log_gdp_per_capita
 ```{r}
 # Se establece la variable a predecir "life_ladder" y la predictora "log_gdp_per_capita"
 Y <- Data_relevante$life_ladder
@@ -423,7 +433,7 @@ Tabla_Resultados <- data.frame(
 
 ```
 
-## electricity_access
+### electricity_access
 ```{r}
 # Se establece la variable a predecir "life_ladder" y la predictora "electricity_access"
 Y <- Data_relevante$life_ladder
@@ -473,7 +483,7 @@ Tabla_Resultados <- rbind(Tabla_Resultados, data.frame(
 
 ```
 
-## water_access
+### water_access
 ```{r}
 # Se establece la variable a predecir "life_ladder" y la predictora "water_access"
 Y <- Data_relevante$life_ladder
@@ -523,7 +533,7 @@ Tabla_Resultados <- rbind(Tabla_Resultados, data.frame(
 
 ```
 
-## cpi
+### cpi
 ```{r}
 # Se establece la variable a predecir "life_ladder" y la predictora "cpi"
 Y <- Data_relevante$life_ladder
@@ -573,7 +583,40 @@ Tabla_Resultados <- rbind(Tabla_Resultados, data.frame(
 print(Tabla_Resultados)
 ```
 
-# Normalización
+Se crea una tabla de resultados con el fin de poder analizar los resultados obtenidas de forma sencilla y agrupada, se puede observar que los coeficientes de correlación presentan un alto grado de relación con respecto a la variable de estudio, además de encontrarse presentes en el rango del Intervalo de Confianza. Lo que se quería demostrar era la relación existente entre los marcadores socio economicos y el indice de Felicidad, con los resultados obtenidos podemos afirmar que existe una relación positiva.
+
+## Analisis de diagnosticos del Modelo
+
+Se crea un modelo de regresión lineal entra las variables predictoras y la predecida con el fin de obtener los residuales y evaluar la efectividad del metodo Shapiro-Wilks
+
+```{r}
+modelo_gdp <- lm(life_ladder ~ log_gdp_per_capita, data = Data_relevante)
+modelo_electricity <- lm(life_ladder ~ electricity_access, data = Data_relevante)
+modelo_water <- lm(life_ladder ~ water_access, data = Data_relevante)
+modelo_cpi <- lm(life_ladder ~ cpi, data = Data_relevante)
+
+# Gráfico de diagnostico de residuales
+par(mfrow = c(2, 2))
+plot(modelo_gdp)
+plot(modelo_electricity)
+plot(modelo_water)
+plot(modelo_cpi)
+
+# Comprobar si los residuos se distribuyen de forma normal
+shapiro.test(resid(modelo_gdp))
+shapiro.test(resid(modelo_electricity))
+shapiro.test(resid(modelo_water))
+shapiro.test(resid(modelo_cpi))
+```
+
+Los gráficos nos permiten estudiar el comportamiento de distintos parametros de los modelos:
+(1) Residuals vs Fitted: Nos permite detectar problemas de no linealidad, heterocedasticidad o outliers
+(2) Normal Q-Q: Permite evaluar la normalidad de los residuales
+(3) Scale-Location: Verficia la homocedasticidad
+(4) Residuals vs Leverage: Identifica puntos influyentes
+
+A su vez el test de normalidad de Shapiro-Wilk de los residuos nos permite observar si se da un comportamiento Normal de los residuos.
+## Normalización
 
 Vamos a normalizar el comportamiento de la variable life_ladder, mediante el uso del Teorema del Límite Central
 
