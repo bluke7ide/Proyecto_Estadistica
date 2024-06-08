@@ -13,9 +13,11 @@ output:
     default_style: "dark"
     downcute_theme: "chaos"
 ---
+
 ```{r setup, include=FALSE}
 knitr::opts_knit$set(root.dir = rprojroot::find_rstudio_root_file())
 ```
+
 # Librerías
 ```{r, warning=FALSE, message=FALSE}
 # install.packages("zoo")
@@ -42,7 +44,8 @@ library(openxlsx)
 library(knitr)
 ```
 
-# Importación de datos
+# Carga de datos
+## Importación de los datos
 ```{r}
 # Se carga la base de datos principal
 World_Data <- read_excel("data/World_Data.xlsx")
@@ -52,14 +55,6 @@ World_Data_2 <- World_Data
 
 # Se carga la base de datos con los indices de felicidad
 Tabla_Felicidad <- read_excel("data/DataForTable2.1 (1).xls")
-```
-
-# Análisis descriptivo
-## Resumen
-Se obtiene un summary de la base de datos principal
-```{r}
-summary(World_Data)
-summary(Tabla_Felicidad)
 ```
 
 ## Limpieza de los datos
@@ -107,16 +102,8 @@ rm(col)
 rm(promedios)
 ```
 
-Y se guarda el desc brevemente
-```{r}
-World_Data_3_Resumen = descr(World_Data_3)
-write.xlsx(World_Data_3_Resumen, "docs/Estadisticas_Descriptivas.xlsx", rowNames = TRUE)
-```
-
 ### Transformación de la columna income_class
-
 En la estructura que presenta "World_Data_3" se puede observar que cada variable va en una columna, no existe una combinación de distintas variables en la misma columna. A su vez cada observación es unica y sus valores estan distribuidos a lo largo de una unica fila Existe un identificador o key claro para cada una de las entradas, en este caso corresponde a la columna "country" que indica el país. Además queremos que todas las variables manejen valores numericos, asi que se va a reemplazar los valores de "income_class" por su factor, para de esta forma tener unicamente variables numericas. Ahora lo que vamos a realizar es un analisis descriptivo completo de la tabla, la forma mas sencilla de empezar este proceso es mediante la funcion "summary()", la cual permite obtener distintos estadísticos de la tabla en cuestión. Se procede a utilizar dicha funcion.
-
 ```{r}
 World_Data_3 <- World_Data_3 %>%
   mutate(income_class = case_when(
@@ -133,16 +120,31 @@ colnames(World_Data_3) <- tolower(gsub(" ", "_", colnames(World_Data_3)))
 ```
 
 ### Eliminar la columna país
-
 Además vamos a eliminar la columna de país, ya que queremos conseguir una correlación entre las distintas variables, esta no aporta utilidad en una escala mayor.
-
 ```{r}
 Data_trabajar <- subset(World_Data_3, select = -country)
+```
+
+# Análisis descriptivo
+## Resumen
+Se obtiene un summary de la base de datos principal, sin modificar
+```{r}
+summary(World_Data)
+summary(Tabla_Felicidad)
+```
+
+Se guarda el desc brevemente de la base de datos conjunta
+```{r}
+World_Data_3_Resumen = descr(World_Data_3)
+write.xlsx(World_Data_3_Resumen, "docs/Estadisticas_Descriptivas.xlsx", rowNames = TRUE)
+```
+
+Y un summary breve después de la modificación de la base de datos
+```{r}
 summary(Data_trabajar)
 ```
 
 ## Correlaciones
-
 Con la data estructurada de la forma adecuada, podemos empezamos a buscar la relación existente entre los distintos marcadores con respecto a nuestro variable objetivo, en este caso "life_ladder". De la matriz de covarianza, podemos encontrar que tanta relación existe entre las distintas variables que forman la tabla, de forma que va a ser mas sencillo visualizar en que variables concentrar el estudio. Así como la de correlación, ya que al estar normalizada con valores que van desde -1 hasta 1, resulta mas sencilla observar las relaciones existentes. También se imprime el plot de correlaciones, ya que las dimensiones de Látex limitan la posibilidad de utilizar la matriz numérica.
 ```{r, message=FALSE, warning=FALSE, echo=FALSE}
 write.xlsx(as.data.frame(cov(Data_trabajar)),
