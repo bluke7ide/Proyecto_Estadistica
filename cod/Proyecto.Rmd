@@ -13,11 +13,9 @@ output:
     default_style: "dark"
     downcute_theme: "chaos"
 ---
-
 ```{r setup, include=FALSE}
 knitr::opts_knit$set(root.dir = rprojroot::find_rstudio_root_file())
 ```
-
 # Librerías
 ```{r, warning=FALSE, message=FALSE}
 # install.packages("zoo")
@@ -30,7 +28,9 @@ knitr::opts_knit$set(root.dir = rprojroot::find_rstudio_root_file())
 # install.packages("ggpubr")
 # install.packages('openxlsx')
 # install.packages('knitr')
+# install.packages("plotly)
 
+library(plotly)
 library(ggpubr)
 library(zoo)
 library(dplyr)
@@ -98,8 +98,6 @@ for (col in names(World_Data_3)) {
   World_Data_3[[col]][is.na(World_Data_3[[col]])] <- promedios[[col]]
 }
 colSums(is.na(World_Data_3))
-rm(col)
-rm(promedios)
 ```
 
 ### Transformación de la columna income_class
@@ -135,8 +133,7 @@ summary(Tabla_Felicidad)
 
 Se guarda el desc brevemente de la base de datos conjunta
 ```{r}
-World_Data_3_Resumen = descr(World_Data_3)
-write.xlsx(World_Data_3_Resumen,
+write.xlsx(descr(World_Data_3),
            "docs/Estadisticas_Descriptivas.xlsx", rowNames = TRUE)
 ```
 
@@ -316,12 +313,13 @@ plots[[6]] <- ggscatter(
   theme_minimal() +
   ylim(0,8)
 
-plots[[1]]
-plots[[2]]
-plots[[3]]
-plots[[4]]
-plots[[5]]
-plots[[6]]
+# A nivel interactivo, plotly ayuda al html. No sirve para el documento formal.
+plots[[1]] %>% ggplotly() 
+plots[[2]] 
+plots[[3]] 
+plots[[4]] %>% ggplotly()
+plots[[5]] 
+plots[[6]] 
 
 ggsave("docs/segundos_graficos/life_ladder.pdf", plot = plots[[1]])
 ggsave("docs/segundos_graficos/elec_life.pdf", plot = plots[[2]])
@@ -329,7 +327,6 @@ ggsave("docs/segundos_graficos/water_life.pdf", plot = plots[[3]])
 ggsave("docs/segundos_graficos/income_life.pdf", plot = plots[[4]])
 ggsave("docs/segundos_graficos/cpi_life.pdf", plot = plots[[5]])
 ggsave("docs/segundos_graficos/lgdp_life.pdf", plot = plots[[6]])
-rm(plots)
 ```
 
 Con valores de p inferiores al 0.05 en todos los casos se acepta la hipótesis de que existe una correlación positiva entre los distintos marcadores del progreso socioeconómico (1) log_gdp_per_capita, (2) electricity_access, (3) water_access, (4) cpi, con respecto a la variable de estudio life_ladder
@@ -367,8 +364,10 @@ qqplots_b <- ggqqplot(Data_relevante$log_gdp_per_capita,
   ylim(0, 15) +
   geom_qq(colour = "#006400")
 
-qqplots_a
-qqplots_b
+# A nivel interactivo, plotly ayuda al html. No sirve para el documento formal.
+
+qqplots_a %>% ggplotly()
+qqplots_b %>% ggplotly()
 
 ggsave("docs/terceros_graficos/qqp_life.pdf", plot = qqplots_a, limitsize = FALSE)
 ggsave("docs/terceros_graficos/qqp_lgdp.pdf", plot = qqplots_b, limitsize = FALSE)
@@ -376,205 +375,67 @@ ggsave("docs/terceros_graficos/qqp_lgdp.pdf", plot = qqplots_b, limitsize = FALS
 
 En los gráficos se puede apreciar la forma en la que se distribuye las distribuciones y su relación con una distribución normal
 
-## Metodo Delta Multivariable y Transformación Z de Fisher
+## Método Delta Multivariable y Transformación Z de Fisher
 Para cada uno de los predictores siguientes se decide realizar el calculo de la covarianza y varianzas requeridas para obtener la correlación, además de esto se obtiene el coeficiente de regresión. Seguido de esto se realiza la transformación Z de Fisher para calcular los intervalos de confianza de la correlación obtenida.
 
-### log_gdp_per_capita
+### Función a aplicar a todas las variables
 ```{r}
-# Se establece la variable a predecir "life_ladder" y la predictora "log_gdp_per_capita"
-Y <- Data_relevante$life_ladder
-X <- Data_relevante$log_gdp_per_capita
-XY <- X*Y
-X_2 <- X*X
-n <- length(Data_relevante$life_ladder)
+relacionar <- function(var){
+  Y <- Data_relevante$life_ladder
+  X <- Data_relevante[[var]]
+  XY <- X*Y
+  X_2 <- X*X
+  n <- length(Data_relevante$life_ladder)
+  
+  # Covarianza y varianzas
+  valor_cov <- cov(X, Y)
+  var_X <- var(X)
+  var_Y <- var(Y)
+  
+  # Correlación
+  cor = valor_cov/(sqrt(var_X * var_Y))
+  
+  # Promedios
+  XY_promedio <- mean(XY)
+  X_promedio <- mean(X)
+  Y_promedio <- mean(Y)
+  X_2_promedio <- mean(X_2)
+  
+  rn <- (XY_promedio - X_promedio * Y_promedio) / (sqrt(X_2_promedio - X_promedio^2))
+  
+  # Función g, del método delta
+  funcion_g <- tan(cor)
+  funcion_g_prima <- 1/(1-cor^2)
+  
+  # TLC
+  tlc <- sqrt(n) * (rn - cor) * funcion_g_prima
+  
+  # Transformación de Fisher
+  z = funcion_g
+  sd_z <- 1 / sqrt(n - 3)
+  
+  z_conf_int <- z + c(-1, 1) * qnorm(0.975, mean = 0, sd = 1) * sd_z
+  cor_conf_int <- (exp(2 * z_conf_int) - 1) / (exp(2 * z_conf_int) + 1)
+  
+  tabla <- data.frame(
+    "Predictor" = var,
+    "Correlación" = cor,
+    "Coeficiente de Regresión" = rn,
+    "IC Inferior Correlación" = cor_conf_int[1],
+    "IC Superior Correlación" = cor_conf_int[2]
+  )
+  return(tabla)
+}
+```
 
-# Covarianza y varianzas
-valor_cov <- cov(X, Y)
-var_X <- var(X)
-var_Y <- var(Y)
-
-# Correlación
-cor = valor_cov/(sqrt(var_X * var_Y))
-
-# Promedios
-XY_promedio <- mean(XY)
-X_promedio <- mean(X)
-Y_promedio <- mean(Y)
-X_2_promedio <- mean(X_2)
-
-rn <- (XY_promedio - X_promedio * Y_promedio) / (sqrt(X_2_promedio - X_promedio^2))
-
-# Función g
-funcion_g <- tan(cor)
-funcion_g_prima <- 1/(1-cor^2)
-
-# TLC
-tlc <- sqrt(n) * (rn - cor) / (1 - cor^2)
-
-# Transformación de Fisher
-z = funcion_g
-sd_z <- 1 / sqrt(n - 3)
-
-z_conf_int <- z + c(-1, 1) * qnorm(0.975, mean = 0, sd = 1) * sd_z
-cor_conf_int <- (exp(2 * z_conf_int) - 1) / (exp(2 * z_conf_int) + 1)
-
-Tabla_Resultados <- data.frame(
-  "Predictor" = "log_gdp_per_capita",
-  "Correlación" = cor,
-  "Coeficiente de Regresión" = rn,
-  "IC Inferior Correlación" = cor_conf_int[1],
-  "IC Superior Correlación" = cor_conf_int[2]
+### Realizando la tabla de resultados
+```{r}
+Tabla_Resultados <- rbind(
+  relacionar("log_gdp_per_capita"),
+  relacionar("electricity_access"),
+  relacionar("water_access"),
+  relacionar("cpi")
 )
-
-```
-
-### electricity_access
-```{r}
-# Se establece la variable a predecir "life_ladder" y la predictora "electricity_access"
-Y <- Data_relevante$life_ladder
-X <- Data_relevante$electricity_access
-XY <- X*Y
-X_2 <- X*X
-n <- length(Data_relevante$life_ladder)
-
-# Covarianza y varianzas
-valor_cov <- cov(X, Y)
-var_X <- var(X)
-var_Y <- var(Y)
-
-# Correlación
-cor = valor_cov/(sqrt(var_X * var_Y))
-
-# Promedios
-XY_promedio <- mean(XY)
-X_promedio <- mean(X)
-Y_promedio <- mean(Y)
-X_2_promedio <- mean(X_2)
-
-rn <- (XY_promedio - X_promedio * Y_promedio) / (sqrt(X_2_promedio - X_promedio^2))
-
-# Función g
-funcion_g <- tan(cor)
-funcion_g_prima <- 1/(1-cor^2)
-
-# TLC
-tlc <- sqrt(n) * (rn - cor) / (1 - cor^2)
-
-# Transformación de Fisher
-z = funcion_g
-sd_z <- 1 / sqrt(n - 3)
-
-z_conf_int <- z + c(-1, 1) * qnorm(0.975, 0, 1) * sd_z
-cor_conf_int <- (exp(2 * z_conf_int) - 1) / (exp(2 * z_conf_int) + 1)
-
-
-Tabla_Resultados <- rbind(Tabla_Resultados, data.frame(
-  "Predictor" = "electricity_access",
-  "Correlación" = cor,
-  "Coeficiente de Regresión" = rn,
-  "IC Inferior Correlación" = cor_conf_int[1],
-  "IC Superior Correlación" = cor_conf_int[2]
-))
-
-```
-
-### water_access
-```{r}
-# Se establece la variable a predecir "life_ladder" y la predictora "water_access"
-Y <- Data_relevante$life_ladder
-X <- Data_relevante$water_access
-XY <- X*Y
-X_2 <- X*X
-n <- length(Data_relevante$life_ladder)
-
-# Covarianza y varianzas
-valor_cov <- cov(X, Y)
-var_X <- var(X)
-var_Y <- var(Y)
-
-# Correlación
-cor = valor_cov/(sqrt(var_X * var_Y))
-
-# Promedios
-XY_promedio <- mean(XY)
-X_promedio <- mean(X)
-Y_promedio <- mean(Y)
-X_2_promedio <- mean(X_2)
-
-rn <- (XY_promedio - X_promedio * Y_promedio) / (sqrt(X_2_promedio - X_promedio^2))
-
-# Función g
-funcion_g <- tan(cor)
-funcion_g_prima <- 1/(1-cor^2)
-
-# TLC
-tlc <- sqrt(n) * (rn - cor) / (1 - cor^2)
-
-# Transformación de Fisher
-z = funcion_g
-sd_z <- 1 / sqrt(n - 3)
-
-z_conf_int <- z + c(-1, 1) * qnorm(0.975, 0, 1) * sd_z
-cor_conf_int <- (exp(2 * z_conf_int) - 1) / (exp(2 * z_conf_int) + 1)
-
-
-Tabla_Resultados <- rbind(Tabla_Resultados, data.frame(
-  "Predictor" = "water_access",
-  "Correlación" = cor,
-  "Coeficiente de Regresión" = rn,
-  "IC Inferior Correlación" = cor_conf_int[1],
-  "IC Superior Correlación" = cor_conf_int[2]
-))
-
-```
-
-### cpi
-```{r}
-# Se establece la variable a predecir "life_ladder" y la predictora "cpi"
-Y <- Data_relevante$life_ladder
-X <- Data_relevante$cpi
-XY <- X*Y
-X_2 <- X*X
-n <- length(Data_relevante$life_ladder)
-
-# Covarianza y varianzas
-valor_cov <- cov(X, Y)
-var_X <- var(X)
-var_Y <- var(Y)
-
-# Correlación
-cor = valor_cov/(sqrt(var_X * var_Y))
-
-# Promedios
-XY_promedio <- mean(XY)
-X_promedio <- mean(X)
-Y_promedio <- mean(Y)
-X_2_promedio <- mean(X_2)
-
-rn <- (XY_promedio - X_promedio * Y_promedio) / (sqrt(X_2_promedio - X_promedio^2))
-
-# Función g
-funcion_g <- tan(cor)
-funcion_g_prima <- 1/(1-cor^2)
-
-# TLC
-tlc <- sqrt(n) * (rn - cor) / (1 - cor^2)
-
-# Transformación de Fisher
-z = funcion_g
-
-z_conf_int <- z + c(-1, 1) * qnorm(0.975, 0, 1) * 1 / sqrt(n - 3)
-cor_conf_int <- (exp(2 * z_conf_int) - 1) / (exp(2 * z_conf_int) + 1)
-
-
-Tabla_Resultados <- rbind(Tabla_Resultados, data.frame(
-  "Predictor" = "cpi",
-  "Correlación" = cor,
-  "Coeficiente de Regresión" = rn,
-  "IC Inferior Correlación" = cor_conf_int[1],
-  "IC Superior Correlación" = cor_conf_int[2]
-))
-
 print(Tabla_Resultados)
 ```
 
@@ -583,43 +444,49 @@ Se crea una tabla de resultados con el fin de poder analizar los resultados obte
 # Análisis de diagnósticos del Modelo
 ## Residuales
 Se crea un modelo de regresión lineal entra las variables predictoras y la predecida con el fin de obtener los residuales y evaluar la efectividad del método Shapiro-Wilks
+
+
 ```{r}
 modelo_gdp <- lm(life_ladder ~ log_gdp_per_capita, data = Data_relevante)
 modelo_electricity <- lm(life_ladder ~ electricity_access, data = Data_relevante)
 modelo_water <- lm(life_ladder ~ water_access, data = Data_relevante)
 modelo_cpi <- lm(life_ladder ~ cpi, data = Data_relevante)
+```
 
-# Gráfico de diagnostico de residuales
+Los gráficos nos permiten estudiar el comportamiento de distintos parámetros de los modelos:
+
+(1) Residuals vs Fitted: Nos permite detectar problemas de no linealidad, heterocedasticidad o outliers
+
+(2) Normal Q-Q: Permite evaluar la normalidad de los residuales
+
+(3) Scale-Location: Verifica la homocedasticidad
+
+(4) Residuals vs Leverage: Identifica puntos influyentes
+
+```{r}
 par(mfrow = c(2, 2))
 plot(modelo_gdp)
 plot(modelo_electricity)
 plot(modelo_water)
 plot(modelo_cpi)
+```
 
-# Comprobar si los residuos se distribuyen de forma normal
+A su vez el test de normalidad de Shapiro-Wilk de los residuos nos permite observar si se da un comportamiento Normal de los residuos.
+```{r}
 shapiro.test(resid(modelo_gdp))
 shapiro.test(resid(modelo_electricity))
 shapiro.test(resid(modelo_water))
 shapiro.test(resid(modelo_cpi))
 ```
 
-Los gráficos nos permiten estudiar el comportamiento de distintos parámetros de los modelos:
-(1) Residuals vs Fitted: Nos permite detectar problemas de no linealidad, heterocedasticidad o outliers
-(2) Normal Q-Q: Permite evaluar la normalidad de los residuales
-(3) Scale-Location: Verifica la homocedasticidad
-(4) Residuals vs Leverage: Identifica puntos influyentes
-
-A su vez el test de normalidad de Shapiro-Wilk de los residuos nos permite observar si se da un comportamiento Normal de los residuos.
-
 ## Normalización
 
 Vamos a normalizar el comportamiento de la variable life_ladder, mediante el uso del Teorema del Límite Central
 ```{r}
-Y_promedio <- mean(Y)
-Y_sd <- sd(Y)
-ystd <- data.frame(norm = (Y - Y_promedio)/Y_sd)
+Y <- Data_relevante$life_ladder
+ystd <- data.frame(norm = (Y - mean(Y))/sd(Y))
 
-ggplot(ystd, aes(x = norm)) +
+std <- ggplot(ystd, aes(x = norm)) +
   geom_histogram(aes(y = after_stat(density), fill = "Histograma"), 
                  color = "black", bins = 30) +
   geom_density(aes(fill = "Densidad"), 
@@ -638,6 +505,25 @@ ggplot(ystd, aes(x = norm)) +
   scale_color_manual(values = c("darkorange3")) +
   xlim(-3,3) +
   theme_minimal() + 
-  theme(legend.position = 'bottom')
+  theme(legend.position = 'bottom') 
+std %>% ggplotly()
+
+```
+
+```{r, echo=FALSE}
+rm(col)
+rm(promedios)
+rm(plots)
+rm(res)
+rm(relacionar)
+rm(modelo_cpi)
+rm(modelo_electricity)
+rm(modelo_gdp)
+rm(modelo_water)
+rm(qqplots_a)
+rm(qqplots_b)
+rm(Y)
+rm(ystd)
+rm(std)
 ```
 
