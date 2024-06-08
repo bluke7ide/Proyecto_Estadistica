@@ -103,7 +103,7 @@ rm(promedios)
 ```
 
 ### Transformación de la columna income_class
-En la estructura que presenta "World_Data_3" se puede observar que cada variable va en una columna, no existe una combinación de distintas variables en la misma columna. A su vez cada observación es unica y sus valores estan distribuidos a lo largo de una unica fila Existe un identificador o key claro para cada una de las entradas, en este caso corresponde a la columna "country" que indica el país. Además queremos que todas las variables manejen valores numericos, asi que se va a reemplazar los valores de "income_class" por su factor, para de esta forma tener unicamente variables numericas. Ahora lo que vamos a realizar es un analisis descriptivo completo de la tabla, la forma mas sencilla de empezar este proceso es mediante la funcion "summary()", la cual permite obtener distintos estadísticos de la tabla en cuestión. Se procede a utilizar dicha funcion.
+En la estructura que presenta "World_Data_3" se puede observar que cada variable va en una columna, no existe una combinación de distintas variables en la misma columna. A su vez cada observación es única y sus valores están distribuidos a lo largo de una única fila. Existe un identificador o key claro para cada una de las entradas, en este caso corresponde a la columna "country" que indica el país. Además queremos que todas las variables manejen valores numéricos, así que se va a reemplazar los valores de "income_class" por su factor, para de esta forma tener únicamente variables numéricas. Ahora lo que vamos a realizar es un análisis descriptivo completo de la tabla, la forma mas sencilla de empezar este proceso es mediante la función "summary()", la cual permite obtener distintos estadísticos de la tabla en cuestión. Se procede a utilizar dicha función.
 ```{r}
 World_Data_3 <- World_Data_3 %>%
   mutate(income_class = case_when(
@@ -127,7 +127,7 @@ Data_trabajar <- subset(World_Data_3, select = -country)
 
 # Análisis descriptivo
 ## Resumen
-Se obtiene un summary de la base de datos principal, sin modificar
+Se obtiene un resumen de la base de datos principal sin modificar por medio de summary()
 ```{r}
 summary(World_Data)
 summary(Tabla_Felicidad)
@@ -136,7 +136,8 @@ summary(Tabla_Felicidad)
 Se guarda el desc brevemente de la base de datos conjunta
 ```{r}
 World_Data_3_Resumen = descr(World_Data_3)
-write.xlsx(World_Data_3_Resumen, "docs/Estadisticas_Descriptivas.xlsx", rowNames = TRUE)
+write.xlsx(World_Data_3_Resumen,
+           "docs/Estadisticas_Descriptivas.xlsx", rowNames = TRUE)
 ```
 
 Y un summary breve después de la modificación de la base de datos
@@ -161,7 +162,6 @@ corrplot(cor(Data_trabajar), method = "circle", tl.cex = 0.5)
 
 ## Selección de variables relevantes
 Ahora que tenemos el plot de correlación, seleccionamos las variables relevantes para el estudio, así que creamos un nuevo dataframe únicamente con las variables importantes, entre las que más se relacionan.
-
 ```{r}
 Data_relevante = Data_trabajar %>% select (life_ladder,
                                            electricity_access,
@@ -172,7 +172,7 @@ Data_relevante = Data_trabajar %>% select (life_ladder,
 ```
 
 ## Descripción de variables relevantes
-Vamos a realizar varios estadísticos breves para las variables escogidas
+Vamos a realizar varios estadísticos breves para las variables de importancia
 ```{r}
 life_ladder_table <- data.frame(
   Valor = c(summary(Data_relevante$life_ladder),
@@ -202,21 +202,16 @@ row.names(log_gdp_table) <- c("Mínimo",
                               "Desviación Estándar")
 print(log_gdp_table)
 ```
-
+Y las guardamos
 ```{r}
 write.xlsx(life_ladder_table, "docs/life_ladder_table.xlsx", rowNames = TRUE)
 write.xlsx(log_gdp_table, "docs/log_gdp_table.xlsx", rowNames = TRUE)
 ```
 
 
-# Modelos y Análisis de comportamientos
-
+# Ajuste completo del modelo
 ## Coeficiente de Correlación de Pearson
-
-### Gráfico de los datos selectos
-
-Se van a desarrollar graficos con el fin de estudiar el comportamiento de los datos selectos, además se agrega el coeficiente de correlación de Pearson para tener claro el nivel de relación existente entre las variables, además se calcula el valor p el cual nos permite realizar pruebas de hipotesis, en este caso establecer una correlación, en caso de ser menor al usual 0.05 aceptamos la correlación obtenida.
-
+Se van a desarrollar gráficos con el fin de estudiar el comportamiento de los datos selectos, además se agrega el coeficiente de correlación de Pearson para tener claro el nivel de relación existente entre las variables, además se calcula el valor-p el cual nos permite realizar pruebas de hipótesis, en este caso establecer una correlación, en caso de ser menor al usual 0.05 aceptamos la correlación obtenida.
 ```{r, warning=FALSE, message=FALSE, echo=FALSE}
 plots <- list()
 plots[[1]] <- ggplot(Data_relevante, aes(x = life_ladder)) +
@@ -337,9 +332,10 @@ ggsave("docs/segundos_graficos/lgdp_life.pdf", plot = plots[[6]])
 rm(plots)
 ```
 
-Con valores de p inferiores al 0.05 en todos los casos se acepta la hipotesis de que existe una correlación positiva entre los distintos marcadores del progreso socioeconomico (1) log_gdp_per_capita, (2) electricity_access, (3) water_access, (4) cpi, con respecto a la variable de estudio life_ladder
+Con valores de p inferiores al 0.05 en todos los casos se acepta la hipótesis de que existe una correlación positiva entre los distintos marcadores del progreso socioeconómico (1) log_gdp_per_capita, (2) electricity_access, (3) water_access, (4) cpi, con respecto a la variable de estudio life_ladder
 
 ## Correlaciones y Shapiro test
+### Métodos de Pearson, Kendall y Spearman
 Obtenemos la correlación utilizando distintos métodos, en este caso Pearson, Kendall y Spearman, vamos a concentrarnos en Pearson, pero los otros métodos nos permite tener una idea mas clara del comportamiento de los datos.
 ```{r}
 res <- cor.test(Data_relevante$log_gdp_per_capita,
@@ -348,13 +344,14 @@ res <- cor.test(Data_relevante$log_gdp_per_capita,
 print(paste("Valor-p: ",res$p.value))
 print(paste("correlación:", res$estimate))
 ```
-Prueba de normalidad Shapiro-Wilk de las variables
+
+### Prueba de normalidad Shapiro-Wilk de las variables
 ```{r}
 shapiro.test(Data_relevante$life_ladder) 
 shapiro.test(Data_relevante$log_gdp_per_capita)
 ```
 
-### Gráficos relevantes
+### Gráficos relevantes a la prueba anterior
 ```{r}
 qqplots_a <- ggqqplot(Data_relevante$life_ladder, 
                       ylab = "life_ladder") +
@@ -380,7 +377,6 @@ ggsave("docs/terceros_graficos/qqp_lgdp.pdf", plot = qqplots_b, limitsize = FALS
 En los gráficos se puede apreciar la forma en la que se distribuye las distribuciones y su relación con una distribución normal
 
 ## Metodo Delta Multivariable y Transformación Z de Fisher
-
 Para cada uno de los predictores siguientes se decide realizar el calculo de la covarianza y varianzas requeridas para obtener la correlación, además de esto se obtiene el coeficiente de regresión. Seguido de esto se realiza la transformación Z de Fisher para calcular los intervalos de confianza de la correlación obtenida.
 
 ### log_gdp_per_capita
@@ -397,7 +393,7 @@ valor_cov <- cov(X, Y)
 var_X <- var(X)
 var_Y <- var(Y)
 
-# Correlacion
+# Correlación
 cor = valor_cov/(sqrt(var_X * var_Y))
 
 # Promedios
@@ -408,7 +404,7 @@ X_2_promedio <- mean(X_2)
 
 rn <- (XY_promedio - X_promedio * Y_promedio) / (sqrt(X_2_promedio - X_promedio^2))
 
-# Funcion g
+# Función g
 funcion_g <- tan(cor)
 funcion_g_prima <- 1/(1-cor^2)
 
@@ -422,9 +418,6 @@ sd_z <- 1 / sqrt(n - 3)
 z_conf_int <- z + c(-1, 1) * qnorm(0.975, mean = 0, sd = 1) * sd_z
 cor_conf_int <- (exp(2 * z_conf_int) - 1) / (exp(2 * z_conf_int) + 1)
 
-rm(Tabla_Resultados)
-# Tabla con resultados
-# Create the data frame
 Tabla_Resultados <- data.frame(
   "Predictor" = "log_gdp_per_capita",
   "Correlación" = cor,
@@ -449,7 +442,7 @@ valor_cov <- cov(X, Y)
 var_X <- var(X)
 var_Y <- var(Y)
 
-# Correlacion
+# Correlación
 cor = valor_cov/(sqrt(var_X * var_Y))
 
 # Promedios
@@ -460,7 +453,7 @@ X_2_promedio <- mean(X_2)
 
 rn <- (XY_promedio - X_promedio * Y_promedio) / (sqrt(X_2_promedio - X_promedio^2))
 
-# Funcion g
+# Función g
 funcion_g <- tan(cor)
 funcion_g_prima <- 1/(1-cor^2)
 
@@ -499,7 +492,7 @@ valor_cov <- cov(X, Y)
 var_X <- var(X)
 var_Y <- var(Y)
 
-# Correlacion
+# Correlación
 cor = valor_cov/(sqrt(var_X * var_Y))
 
 # Promedios
@@ -510,7 +503,7 @@ X_2_promedio <- mean(X_2)
 
 rn <- (XY_promedio - X_promedio * Y_promedio) / (sqrt(X_2_promedio - X_promedio^2))
 
-# Funcion g
+# Función g
 funcion_g <- tan(cor)
 funcion_g_prima <- 1/(1-cor^2)
 
@@ -549,7 +542,7 @@ valor_cov <- cov(X, Y)
 var_X <- var(X)
 var_Y <- var(Y)
 
-# Correlacion
+# Correlación
 cor = valor_cov/(sqrt(var_X * var_Y))
 
 # Promedios
@@ -560,7 +553,7 @@ X_2_promedio <- mean(X_2)
 
 rn <- (XY_promedio - X_promedio * Y_promedio) / (sqrt(X_2_promedio - X_promedio^2))
 
-# Funcion g
+# Función g
 funcion_g <- tan(cor)
 funcion_g_prima <- 1/(1-cor^2)
 
@@ -585,12 +578,11 @@ Tabla_Resultados <- rbind(Tabla_Resultados, data.frame(
 print(Tabla_Resultados)
 ```
 
-Se crea una tabla de resultados con el fin de poder analizar los resultados obtenidas de forma sencilla y agrupada, se puede observar que los coeficientes de correlación presentan un alto grado de relación con respecto a la variable de estudio, además de encontrarse presentes en el rango del Intervalo de Confianza. Lo que se quería demostrar era la relación existente entre los marcadores socio economicos y el indice de Felicidad, con los resultados obtenidos podemos afirmar que existe una relación positiva.
+Se crea una tabla de resultados con el fin de poder analizar los resultados obtenidas de forma sencilla y agrupada, se puede observar que los coeficientes de correlación presentan un alto grado de relación con respecto a la variable de estudio, además de encontrarse presentes en el rango del Intervalo de Confianza. Lo que se quería demostrar era la relación existente entre los marcadores socio-económicos y el indice de Felicidad, con los resultados obtenidos podemos afirmar que existe una relación positiva.
 
-## Analisis de diagnosticos del Modelo
-
-Se crea un modelo de regresión lineal entra las variables predictoras y la predecida con el fin de obtener los residuales y evaluar la efectividad del metodo Shapiro-Wilks
-
+# Análisis de diagnósticos del Modelo
+## Residuales
+Se crea un modelo de regresión lineal entra las variables predictoras y la predecida con el fin de obtener los residuales y evaluar la efectividad del método Shapiro-Wilks
 ```{r}
 modelo_gdp <- lm(life_ladder ~ log_gdp_per_capita, data = Data_relevante)
 modelo_electricity <- lm(life_ladder ~ electricity_access, data = Data_relevante)
@@ -611,10 +603,10 @@ shapiro.test(resid(modelo_water))
 shapiro.test(resid(modelo_cpi))
 ```
 
-Los gráficos nos permiten estudiar el comportamiento de distintos parametros de los modelos:
+Los gráficos nos permiten estudiar el comportamiento de distintos parámetros de los modelos:
 (1) Residuals vs Fitted: Nos permite detectar problemas de no linealidad, heterocedasticidad o outliers
 (2) Normal Q-Q: Permite evaluar la normalidad de los residuales
-(3) Scale-Location: Verficia la homocedasticidad
+(3) Scale-Location: Verifica la homocedasticidad
 (4) Residuals vs Leverage: Identifica puntos influyentes
 
 A su vez el test de normalidad de Shapiro-Wilk de los residuos nos permite observar si se da un comportamiento Normal de los residuos.
@@ -622,26 +614,9 @@ A su vez el test de normalidad de Shapiro-Wilk de los residuos nos permite obser
 ## Normalización
 
 Vamos a normalizar el comportamiento de la variable life_ladder, mediante el uso del Teorema del Límite Central
-
 ```{r}
-# Obtenemos los parametros necesarios para conseguir la normal de life_ladder
 Y_promedio <- mean(Y)
 Y_sd <- sd(Y)
-
-Y_normalizada = dnorm(Y, Y_promedio, Y_sd)
-
-df_graficar <- data.frame(Life_Ladder = Y, Density = Y_normalizada)
-
-ggplot(df_graficar, aes(x = Life_Ladder, y = Density)) +
-  geom_line(color = "blue") +
-  geom_point(color = "blue") +
-  labs(title = "life_ladder Normalizada",
-       x = "Life Ladder",
-       y = "Densidad") +
-  theme_minimal()
-```
-
-```{r}
 ystd <- data.frame(norm = (Y - Y_promedio)/Y_sd)
 
 ggplot(ystd, aes(x = norm)) +
