@@ -1,0 +1,567 @@
+\chapter{Bitácora 3} \label{bitacora3}
+
+Las sugerencias y correcciones de la Bitácora 2 se detallan en los Apéndices [\ref{Apendices}], mientras que los cambios fueron realizados propiamente en la Bitácora 2 [\ref{bitacora2}]. 
+
+\section{Parte de planificación}
+
+\subsection{Análisis de modelación}
+
+Se mejoró significativamente el código utilizado en la investigación para lograr que fuera completo, robusto y reproducible. A grandes rasgos, el código es capaz de cargar los datos de manera automática, inmediatamente después realiza un análisis descriptivo completo de los datos, luego ajusta e inicializa el modelamiento por su cuenta, esto con las metodologías previstas, por último, realiza un análisis de los resultados de los modelos previos. Todo a su vez debidamente comentado.\\
+
+Al mismo tiempo, nos parece oportuno recordar que el proyecto se encuentra en el repositorio de \textbf{\href{https://github.com/bluke7ide/Proyecto_Estadistica}{GitHub}} [\ref{github}], donde se podrán ver todas las versiones y a su vez los resultados finales.
+\pagebreak
+
+\subsection{Construcción de fichas de resultados}
+
+\begin{table}[H]
+    \caption{Ficha de Resultados 1}
+    \begin{center}
+        \begin{tabular}{  m{3cm} | m{12cm}  }
+        \hline
+        \textbf{ Encabezado} & \textbf{Contenido }\\ 
+        \hline
+        Nombre de su hallazgo/resultado: & Correlación positiva entre el acceso a la electricidad y el Índice de Felicidad.\\ 
+        \hline
+        Resumen en una oración: & Dados los datos que se utilizaron en el estudio, se encontró que sí hay una evidencia empírica de esta correlación.\\ 
+        \hline
+        Principal característica: & Este valor obtenido ayuda a reforzar lo que se ha visto en el material teórico de referencia en el estudio.\\ 
+        \hline
+        Problemas o posibles desafíos: &  Cabe la posibilidad de que los datos que estamos utilizando estén sesgados o que el método de correlación de Pearson no sea el más óptimo para esta relación. \\ \hline
+        Resumen en un párrafo: & Se utilizó la fórmula del índice de correlación de Pearson para encontrar una distancia estadística entre dos variables, funciona de manera similar a una matriz de correlación, pero difieren en que la correlación de Pearson es una relación lineal entre las variables que nos permite analizar los datos con un enfoque diferente. \\ 
+        \hline
+        \end{tabular}
+    \end{center}
+\end{table}
+
+\begin{table}[H]
+    \caption{Ficha de Resultados 2}
+    \begin{center}
+        \begin{tabular}{  m{3cm} | m{12cm}  }
+        \hline
+        \textbf{ Encabezado} & \textbf{Contenido }\\ 
+        \hline
+        Nombre de su hallazgo/resultado: & Correlación positiva entre la clase social y el Índice de Felicidad.\\ 
+        \hline
+        Resumen en una oración: & Se encontró una tendencia a que aquellos en las clases de ingresos más altas tiendan a reportar niveles más altos de felicidad.\\ 
+        \hline
+        Principal característica: &  Dado que esta variable es discreta, y está compuesta por 4 clases propiamente, se puede observar de una manera muy fuerte que efectivamente la felicidad reportada por las personas aumenta conforme suben de clase social. \\ 
+        \hline
+        Problemas o posibles desafíos: &  Aunque el gráfico sugiere una asociación entre ingresos y felicidad, otros factores no considerados en el análisis podrían influir en la percepción de la felicidad. Además, la presencia de valores atípicos podría distorsionar la interpretación de la relación entre las variables. \\ 
+        \hline
+        Resumen en un párrafo: & El análisis revela una relación ascendente entre la clase social y la felicidad percibida, indicando que aquellos en clases sociales más altas tienden a reportar niveles más altos de felicidad. Este hallazgo sugiere que el aumento en los ingresos está asociado con una mayor percepción de bienestar, resaltando la importancia del estatus socioeconómico en la calidad de vida de los individuos. Sin embargo, es importante considerar que este análisis no tiene en cuenta otros factores que pueden influir en la percepción de la felicidad, esto puede corroborarse con los valores atípicos encontrados en la misma. \\ 
+        \hline
+        \end{tabular}
+    \end{center}
+\end{table}
+
+\begin{table}[H]
+    \caption{Ficha de Resultados 3}
+    \begin{center}
+        \begin{tabular}{  m{3cm} | m{12cm}  }
+        \hline
+        \textbf{ Encabezado} & \textbf{Contenido }\\ 
+        \hline
+        Nombre de su hallazgo/resultado: & Correlación positiva entre el acceso al agua y el Índice de Felicidad.\\ 
+        \hline
+        Resumen en una oración: & Se encontró una relación positiva entre los índices de acceso al agua y el de felicidad, de un $0.71$. \\
+        \hline
+        Principal característica: &  Esta es una de las variables que presenta más relación lineal con el índice de felicidad, de donde podemos inferir que el acceso al agua es uno de los determinantes importantes del índice de felicidad.\\ 
+        \hline
+        Problemas o posibles desafíos: &  Los datos podrían verse manipulados a conveniencia o que la relación entre los índices no sea lineal. \\ 
+        \hline
+        Resumen en un párrafo: & Se utilizó el método de correlación de pearson, que busca la relación lineal entre dos variables, de donde el valor de 1 índica una relación lineal positiva absoluta, en este caso, encontramos que el índice de correlación fue del $0.71$ lo cual es un número bastante representativo de la relación que existe entre estas variables. \\ 
+        \hline
+        \end{tabular}
+    \end{center}
+\end{table}
+
+\begin{table}[H]
+    \caption{Ficha de Resultados 4}
+    \begin{center}
+        \begin{tabular}{  m{3cm} | m{12cm}  }
+        \hline
+        \textbf{ Encabezado} & \textbf{Contenido }\\ 
+        \hline
+        Nombre de su hallazgo/resultado: & Correlación positiva entre el Producto Interno Bruto y el Índice de Felicidad.\\ 
+        \hline
+        Resumen en una oración: & Se encontró una relación positiva entre el índice del log Producto Interno Bruto y el índice de felicidad, de un $0.81$, siendo este nuestro índice más importante.  \\ 
+        \hline
+        Principal característica: &  Esta variable representa nuestro índice de correlación más importante dado el método de correlación de Pearson. Se esperaba desde el anteproyecto que esta relación fuera la más importante dadas las referencias bibliográficas que se utlizaron para la investigación y con los datos que se utilizaron logramos obtener un refuerzo empírico de esta relación.\\ 
+        \hline
+        Problemas o posibles desafíos: & La cultura de los países donde conseguimos los datos puede afectar a este resultado, es decir, países con economías capitalistas tienden a asociar el ingreso con una mayor felicidad, por lo cual los datos podrían no ser representativos a economías donde no se sigue esta ideología. \\ \hline
+        Resumen en un párrafo: & Se utilizó el método de correlación de pearson, que busca la relación lineal entre dos variables, de donde el valor de 1 índica una relación lineal positiva absoluta, en este caso, encontramos que el índice de correlación fue del $0.71$ lo cual es un número bastante representativo de la relación que existe entre estas variables. \\ 
+        \hline
+        \end{tabular}
+    \end{center}
+\end{table}
+
+\begin{table}[H]
+    \caption{Ficha de Resultados 5}
+    \begin{center}
+        \begin{tabular}{  m{3cm} | m{12cm}  }
+        \hline
+        \textbf{ Encabezado} & \textbf{Contenido } \\ 
+        \hline
+        Nombre de su hallazgo/resultado: & Aproximación empírica de la densidad del Índice de Felicidad con una Normal.\\ 
+        \hline
+        Resumen en una oración: & Se graficó de manera continua el histograma del Índice de Felicidad y se comparó con una distribución Normal de parámetros media muestral y varianza muestral.\\ 
+        \hline
+        Principal característica: & Para realizar esta comparación, se utilizó una normal de parámetros media muestral y varianza muestral, ya que estos son los estimadores de máxima verosimilitud del parámetro y por ende es nuestra mejor aproximación que tenemos de éste. Para esto se utlizaron funciones de R con el fin de poder graficar el histograma continuamente y hacer la comparación más evidente.\\ 
+        \hline
+        Problemas o posibles desafíos: & Que el método de estimación que utilizamos para la distribución normal no estén cerca o que la cantidad de datos que usamos para sacar el estimador de máxima verosimilutd no fueron suficientes para poder aproximar la distribución.\\ 
+        \hline
+        Resumen en un párrafo: & Se comparó una versión continua del histograma para poder evidenciar qué tanto del área de una normal, con parámetros media muestral y varianza muestral, es llenado por esta versión continua del histograma.\\ 
+        \hline
+        \end{tabular}
+    \end{center}
+\end{table}
+
+\begin{table}[H]
+    \caption{Ficha de Resultados 6}
+    \begin{center}
+        \begin{tabular}{  m{3cm} | m{12cm}  }
+        \hline
+        \textbf{ Encabezado} & \textbf{Contenido }\\ 
+        \hline
+        Nombre de su hallazgo/resultado: & Evaluación del comportamiento del Índice de Felicidad como una distribución normal.\\ 
+        \hline
+        Resumen en una oración: & El gráfico de cuantiles del Índice de Felicidad muestra que los datos se alinean bien con la línea diagonal en el medio, con pequeñas desviaciones a partir de los extremos.\\ 
+        \hline
+        Principal característica: & Dado que la mayoría de los datos del Índice de Felicidad se alinean con la línea diagonal, se puede observar entonces que los datos siguen una distribución aproximadamente normal en el rango central. \\ 
+        \hline
+        Problemas o posibles desafíos: & Las pequeñas desviaciones en los extremos sugieren que podría haber ligeras diferencias de normalidad en las colas de la distribución, pero no parecen ser tan significativas.\\ 
+        \hline
+        Resumen en un párrafo: &  El gráfico de cuantiles del Índice de Felicidad revela que los datos se alinean bien con la línea diagonal que representa la distribución normal teórica, especialmente en el rango central. A partir de los valores de $-1,5$ y $1,5$, se observa una ligera desviación de los puntos de la línea diagonal, indicando que hay pequeñas diferencias de normalidad en los extremos de la distribución. En general, estos resultados sugieren que el Índice de Felicidad sigue una distribución aproximadamente normal, lo que es favorable para la aplicación de métodos estadísticos que asumen normalidad. \\ 
+        \hline
+        \end{tabular}
+    \end{center}
+\end{table}
+
+\begin{table}[H]
+    \caption{Ficha de Resultados 7}
+    \begin{center}
+        \begin{tabular}{  m{3cm} | m{12cm}  }
+        \hline
+        \textbf{ Encabezado} & \textbf{Contenido }\\ 
+        \hline
+        Nombre de su hallazgo/resultado: & Evaluación del comportamiento del log PIB per cápita como una distribución normal.\\ 
+        \hline
+        Resumen en una oración: & En el gráfico de cuantiles de log PIB per cápita, los datos se alinean mayormente con la línea diagonal, indicando una posible distribución normal. \\ 
+        \hline
+        Principal característica: & La mayoría de los puntos de la variable log PIB per cápita coinciden con la línea diagonal, lo que sugiere una posible distribución normal en la región central del gráfico.\\ 
+        \hline
+        Problemas o posibles desafíos: & Se detectan pequeñas divergencias en los extremos del gráfico, lo que podría implicar diferencias en la normalidad en las colas de la distribución.\\ 
+        \hline
+        Resumen en un párrafo: & El gráfico de cuantiles de log PIB per cápita muestra una adecuada alineación de los datos con la línea diagonal, especialmente en el área central del gráfico, lo que sugiere una posible distribución normal en esa sección. No obstante, se observan algunas divergencias en los extremos, indicando posibles variaciones en la normalidad en esas áreas. A pesar de estas variaciones, los resultados sugieren que la variable log PIB per cápita podría aproximarse a una distribución normal, lo que nuevamente facilitaría la aplicación de métodos estadísticos que asumen normalidad. \\ 
+        \hline
+        \end{tabular}
+    \end{center}
+\end{table}
+
+\begin{table}[H]
+    \caption{Ficha de Resultados 8}
+    \begin{center}
+        \begin{tabular}{  m{3cm} | m{12cm}  }
+        \hline
+        \textbf{ Encabezado} & \textbf{Contenido }\\ 
+        \hline
+        Nombre de su hallazgo/resultado: & Normalización del Índice de Felicidad por medio del Teorema del Límite Central. \\ 
+        \hline
+        Resumen en una oración: & Se consiguió normalizar la variable del Índice de Felicidad mediante el uso del Teorema del Límite Central.\\ 
+        \hline
+        Principal característica: & Para lograr llegar a cabo la normalización del Índice de Felicidad, se utilizaron los estadísticos de máxima verosimilitud y el Teorema del Límite Central.\\ 
+        \hline
+        Problemas o posibles desafíos: &  El Teorema del Límite Central implícitamente requiere de una cantidad muy grande de datos, mientras que la cantidad de datos nuestra está limitada a menos poco menos de 200.\\ 
+        \hline
+        Resumen en un párrafo: & Haciendo uso de los estadísticos de máxima verosimilitud y el Teorema del Límite Central, se ha conseguido normalizar la variable indicadora de la Felicidad, esto toma más valor al juntarlo con el resultado previamente conseguido, donde vimos que el Índice de Felicidad tiende a ser normal. Sin embargo, existe una limitante al hacer uso de este teorema, y es que la cantidad de datos es limitada, por lo que sería importante considerar este factor.\\ 
+        \hline
+        \end{tabular}
+    \end{center}
+\end{table}
+\newpage
+
+\subsection{Ordenamiento de los elementos de reporte}
+
+En primer lugar, se procede a identificar los elementos primarios y secundarios del trabajo.
+
+\begin{table}[H]
+    \caption{Identificación de los elementos primarios y secundarios}
+    \begin{center}
+        \begin{tabular}{  m{7cm}  m{7cm}  }
+        \hline
+        \multicolumn{2}{c}{\textbf{Elementos de reporte}} \\
+        \hline
+        \textbf{Primarios} & \textbf{Secundarios} \\
+        \hline
+        Método Delta Multivariable & Identificación de las variables relevantes.\\ 
+        Coeficiente de Correlación de Pearson & Elección de teoría bibliográfica\\ 
+        Pruebas de Shapiro-Wilk & Matriz de correlaciones\\
+        Transformación Z de Fisher & Intervalos de confianza sobre los índices de correlaciones\\
+        Interconexión entre indicadores socioeconómicos & Teorema del Límite Central para normalizar los datos.\\ 
+        Índices de correlaciones positivos & Contradicciones encontradas en la bibliografía.\\
+        Comportamientos de variables como variables normales & Limitaciones y complejidades del concepto de felicidad.\\
+        \hline
+        \end{tabular}
+    \end{center}
+\end{table}
+
+\pagebreak
+
+A continuación se procede a realizar una guía de todo lo realizado hasta el momento:
+
+\begin{table}[H]
+    \caption{Tabla guía de escritura}
+    \begin{center}
+        \begin{tabular}{  m{2cm}  m{8cm}  }
+        \hline
+        Sección & Tema a tratar \\
+        \hline
+        Introducción & 1. Definición de Indicadores Socioeconómicos. (Primario) \\
+        & 2. Definición de Felicidad como concepto y como variable de estudio. (Primario) \\
+        & 3. Identificación de las variables relevantes. (Secundario)\\ 
+        & 4. Selección de los modelos. (Primario)\\ 
+        & 5. Recolección de teoría bibliográfica. (Secundario)\\ 
+        & 6. \\
+        \hline
+        Metodología & 1. Limpieza de datos. (Primario) \\
+        & 2. Matriz de correlaciones. (Secundario). \\
+        & 3. Coeficiente de correlación de Pearson. (Primario) \\
+        & 4. Método Delta Multivariable. (Primario) \\
+        & 5. Pruebas de Shapiro-Wilks. (Primario) \\
+        & 6. Transformación Z de Fisher. (Primario) \\
+        & 7. Teorema del Límite Central para normalizar los datos. (Secundario)\\
+        \hline
+        Resultados & 1. Índices de correlaciones positivos. (Primario)\\
+        & 2. Comportamientos de variables como variables normales. (Primario)\\
+        & 3. Intervalos de confianza sobre los índices de correlaciones.(Secundario)\\ 
+        & 4. Contradicciones encontradas en la bibliografía. (Secundario)\\
+        & 5. Limitaciones y complejidades del concepto de felicidad. (Secundario)\\
+        \hline
+        \end{tabular}
+    \end{center}
+\end{table}
+
+\newpage
+
+\section{Parte de escritura}
+
+En esta sección se va realizar un contraste de la historia que se describe en la bibliografía utilizada, es decir, por un lado se tiene la historia descrita por la investigación teórica, mientras que por el otro se tiene una historia creada por los datos que encontramos en la investigación. Esto con el fin de reforzar o refutar la teoría que encontramos como marco teórico, la cual motivó la investigación.\\
+
+Inicialmente, la investigación comenzó con la idea de examinar la relación que existe entre el progreso socioeconómico de un país con el Índice de Felicidad, de donde se consideró inicialmente ver específicamente las variables de acceso a la electricidad, acceso al agua, PIB per cápita, entre otros. (Esto porque aún no estaba delimitado del todo las variables que se iban a utilizar en el estudio). La motivación inicial fue ver el impacto qué tienen ciertas variables socioeconómicas sobre nuestra variable de interés (Índice de Felicidad). De igual manera, como mencionamos en partes anteriores, esta investigación podría tener utilidad en el ámbito político, donde se podrían tomar decisiones para optimizar este Índice y de paso tener un progreso socioeconómico.\\
+
+Según el análisis bibliográfico realizado en etapas anteriores de la bitácora, todas las referencias apuntaban a que la relación entre variables socioeconómicas y el Índice de Felicidad tendrían una correlación positiva. Pero antes de adentrarnos con esa conclusión, es importante mencionar que esta investigación sin un valor socioeconómico no tendría sentido, por lo que es importante definir este, de donde según el Instituto Nacional del Cáncer (2024) este valor socioeconómico se define como una ``descripción de la situación de una persona según la educación, los ingresos y el tipo de trabajo que tiene.'' Cabe recalcar que este mismo estudio (del Instituto Nacional del Cáncer, 2024.) se hace mención de que ``las personas con un nivel socioeconómico bajo, a menudo, tienen menos acceso a recursos financieros, educativos, sociales y de salud que aquellas que tienen un nivel socioeconómico más alto.'' Como podemos observar ya se encontraban evidencias de esta relación. \\
+
+También se trató de definir el concepto de felicidad, esto para tener un orden conceptual y saber a qué nos estamos refiriendo cada vez que hablamos de este concepto, sin embargo, definir qué es el concepto de felicidad era un trabajo arduo y no encontramos una definición que se adaptara a esta investigación, más que todo porque este concepto puede ser algo subjetivo de persona a persona, por lo que habría que pensar un agregado y definir la felicidad o al menos un índice según ciertos aspectos en común que hace que una persona valide sus derechos y sus necesidades. Según Roberto Gutiérrez (2023), los Índices de Felicidad que publica la ONU se determinan mediante el PIB per cápita, el apoyo social, la esperanza de vida saludable, la libertad de tomar decisiones vitales, la generosidad y la percepción de la corrupción. Sin embargo, vea que apesar de que la ONU define estos índices, aún deja muchos aspectos sociales de la ``felicidad'' por fuera. \\
+
+Ahora bien, en un intento por crear una correlación positiva entre las variables socioeconómicas con el Índice de Felicidad, notamos que a pesar de que hay evidencia empírica de que los datos parecen tener una relación positiva, hay contraejemplos, lo que no nos deja hacer una generalización, esto lo mencionaban los autores Aguilar, Pámies, Foucault, que mencionaban que ``no se puede generalizar que las políticas encaminadas a maximizar la felicidad nacional aumentarán los datos económicos''. Esto hace referencia a que hay un trade-off entre aumentar la felicidad, o mejorar el crecimiento económico de un país, lo cual es un claro contraejemplo de lo que estamos queriendo analizar. Sin embargo, la evidencia encontrada en la literatura sugiere que tener factores socioeconómicos puede implicar tener un mayor grado de felicidad, y que lo recíproco es falso en general. \\
+
+Debido a esta relación, se intenta utilizar la felicidad para comparar el progreso socioeconómico de los países y así lograr una amplia gamma de enfoques, como por ejemplo factores sociales, dado que ``el hecho de tener un buen estado de salud incrementa la probabilidad de sentirse feliz entre $18.1$ y $28.9$ puntos porcentuales respecto a los que no manifiestan dicho estado.''\\
+
+Por ello, en etapas temprana de esta investigación se pensó en utilizar una base de datos que contuviera la información acerca de varios países, para lograr tener un resultado más conciso. Además de buscar la correlación existente entre las variables y analizar cómo se comporta la distribución del Índice de Felicidad. Desde un principio de la investigación se supo que se tenía que utilizar la metodología del coeficiente de correlación lineal de Pearson, para ver la relación positiva-negativa de las variables y luego aplicar el método delta para obtener los resultados deseados. Estos métodos se describen a continuación: \\
+
+\begin{enumerate}
+    \item \textbf{Coeficiente de Correlación Lineal de Pearson} \\
+    
+    El coeficiente de correlación de Pearson es un índice que mide el grado de covariación entre distintas variables relacionadas linealmente. Supongamos que se tienen dos variables $X$, $Y$. Se define el coeficiente de correlación de Pearson entre estas dos variables como $r_{xy}$ donde:
+    
+    \begin{equation*}
+        -1 \leq r_{xy} \leq 1
+    \end{equation*} 
+    
+    Es importante mencionar que la magnitud de la relación vienen especificada por el valor numérico del coeficiente, mientras que el signo refleja la dirección de tal valor. Esto quiere decir que una relación de $+1$ es igual de fuerte a una relación $-1$, solamente cambia el sentido de esta.\\
+
+    Una correlación positiva entre dos variables indica que a medida que una de ellas aumenta, la otra también lo hace. En el caso de que ambas aumenten en igual medida, se dice que son perfectamente positivas. De manera similar, una correlación negativa entre dos variables indica que a medida que una de ellas aumenta, la otra disminuye. En el caso de que ambas cambien en igual magnitud, se dice que son perfectamente negativas.\\
+
+    El coeficiente de Pearson viene dado por la siguiente fórmula:
+    
+    \begin{equation}
+         r_{xy} = \frac{\sum Z_x Z_y}{N} 
+    \end{equation}
+   
+    Donde: 
+    
+    \begin{itemize}
+        \item $Z_x$ es la desviación estándar de X
+        \item $Z_y$ es la desviación estándar de Y
+        \item N es la cantidad de datos 
+    \end{itemize}
+
+    \item \textbf{Método Delta} \\
+    
+    En el punto anterior, se detalló como obtener el coeficiente de correlación Pearson, note que esta medida puede verse como un estadístico, ya que contiene todos los datos de las variables $X$ y $Y$. A su vez, dado que el procedimiento anterior se realizará con varias variables, podemos decir que obtendremos una serie de estadísticos, esto será de vital importancia para el Método Delta. \\
+
+    \begin{theorem}[Método Delta] 
+    Sea $T_n$ una sucesión de estadísticos tales que:
+        \begin{equation*}
+            \sqrt{n}(T_n - \theta) \xrightarrow[]{d} N(0, \sigma^2(\theta))
+        \end{equation*}
+
+    Sea $g: \mathbb{R} \longrightarrow \mathbb{R}$ diferenciable en $\theta$ con $g'(\theta) \neq 0$. Entonces:
+
+        \begin{equation}
+            \sqrt{n}[g(T_n) - g(\theta)] \xrightarrow[]{d} N(0, [g'(\theta)^2]\sigma^2(\theta))
+        \end{equation}
+    \end{theorem}
+
+    Dicho el teorema, lo que se busca entonces es aproximar la distribución de nuestra variable, por medio de los estadísticos obtenidos al realizar la correlación. 
+\end{enumerate}
+
+Para este punto de la investigación, teníamos pensado sólo aplicar las técnicas descritas anteriormente junto al análisis de datos correspondiente, pero después de avanzar en dicho estudio, descubrimos que podíamos aplicar otras metodologías, las cuales vamos a comentar más adelante, cuando demos una explicación detallada de cuál fue la historia que nosotros obtuvimos al hacer esta investigación. A grandes rasgos, se expandió el uso de coeficiente de correlación a más de un método, siendo estos el de Kendall y el de Spearman, esto para poder realizar comparaciones de los mismos y obtener coeficientes más certeros. Al mismo tiempo, se implementó el uso de pruebas de Shapiro-Wilk, esto para evaluar si la muestra utilizada seguía una distribución normal, con el fin de utilizarlo como previa para más adelante aplicar el Método Delta Multivariado. Por último, se calcularon los intervalos de confianza haciendo uso nuevamente del coeficiente de correlación de Pearson, utilizando el Método de la Transformación Z de Fisher, mismo que se deriva del Método Delta Multivariable.\\
+
+\textbf{\textit{Nuestra Historia:}} \\
+
+Como parte inicial, se realizó una limpieza de la base de datos para tener los datos depurados y que no vayan a ensuciar el análisis que se realizaría posteriormente, también hubieron países que no aportaron ciertos datos, esto pudo haber afectado al análisis de éstos ya que no teníamos una completitud de estos, además de tener una cantidad de datos menos con la cual trabajar.\\
+
+Una vez se tuvieron los datos limpios, para nuestra investigación se utilizó una matriz de correlación, esto con el fin de verificar qué variables presentaban una correlación tanto positiva como negativa con nuestra variable de interés asociada, la cuál es el Índice de Felicidad. Aunque este análisis se hizo para todas las variables, las que son de nuestro interés, son sólo las 4 mencionadas anteriormente (acceso a la electricidad, agua, PIB per cápita, e Índice de corrupción) ya que fueron las que obtuvieron una relación con mayor magnitud. \\
+
+Como hemos venido desarrollando esta sección, desde el comienzo de esta investigación creíamos, dado la evidencia bibliográfica, que nosotros también íbamos a encontrar relaciones positivas entre nuestras variables, para ello, cuando utilizamos el método de coeficiente de relación de Pearson encontramos que existe una relación positiva del acceso a la electricidad y el Índice de Felicidad, en un 0.74. Esto lo que significa, según cómo anteriormente habíamos explicado el método de correlación, es que hay una correlación positiva lineal entre estas variables. Esta correlación fue hecha usando las librerías que proporciona R para este trabajo, pero el método de cálculo de manera manual, es mediante la fórmula que estamos agregando a continuación: \\
+
+\textbf{Coeficiente de Correlación de Pearson} \\
+
+\begin{equation}
+         r_{xy} = \frac{\sum Z_x Z_y}{N} 
+    \end{equation}
+   
+    Donde: 
+    
+    \begin{itemize}
+        \item $Z_x$ es la desviación estándar de X
+        \item $Z_y$ es la desviación estándar de Y
+        \item N es la cantidad de datos 
+    \end{itemize}
+
+Gracias a esta fórmula, pudimos encontrar una relación positiva también entre la variable de acceso al agua, el cual es un factor indispensable en la vida humana. A su vez, podemos afirmar gracias al estudio bibliográfico y al estudio realizado, que sí existe una correlación tanto del acceso a la luz como del acceso al agua con el índice de felicidad, ya que el coeficiente de Pearson nos dio $0.71$ para el caso del agua, el cual es un valor bastante cercano a 1, el cual significa relación casi perfecta. Además, esto se vio reforzado en el resultado de matriz de correlaciones, la cual nos dio una correlación fuerte entre estas variables. \\
+
+Por otro lado, otra variable que ha sido método de estudio en otras investigaciones es el Índice de Percepción de la Corrupción contra el Índice de Felicidad, donde encontramos que también presentan una correlación bastante significativa del 0.8, lo cual indica que este es uno de las variables más importantes en este estudio. Es importante recalcar al lector, que esta correlación dio positiva, es decir, entre mayor Índice de Percepción de Corrupción tengamos, mayor Índice de Felicidad deberíamos tener. Ahora, la interpretación que recibe el Índice de Percepción de la Corrupción se interpreta como ``Entre más cercano de 0, se percibe que hay más corrupción y entre más cercano al 1, entonces se percibe que hay menos corrupción''. Entonces si este índice se interpretara de manera diferente, es de esperar que la correlación del coeficiente de Pearson nos diera un número cercano a $-1$. Este es un resultado que se ha visto en las bibliografías utilizadas, pues las personas tienen una aversión a la corrupción de las entidades gubernamentales que afecta de manera directa a su felicidad. \\
+
+Por último, y no menos importante, la correlación más fuerte dado este método que realizamos se da entre las variables Índice de Felicidad y el logaritmo del Producto Interno Bruto, el cual nos dio un índice de $0.81$. Como vimos en la etapa de análisis bibliográfico, esta variable es la que más se asocia a los Índices de Felicidad, aunque puede no parecer una sorpresa, pues es de esperar que en una economía capitalista, más dinero implique mayor grado de satisfacción, que ya sea directa o indirectamente puede traducirse en mayor disfrute y por ende, en mayor felicidad. \\ 
+
+Por otra parte, el considerar el Método Delta como una metodología a utilizar, nos abrió la puerta hacia su versión más fuerte, la del Método Delta Multivariable. En esta fase, este método se utilizó para conseguir la relación entre nuestras variables predictoras y nuestra variable de estudio, es importante mencionar que como variables predictoras se utilizaron las siguientes variables:
+
+\begin{itemize}
+    \item Acceso a la Electricidad
+
+    \item Acceso al Agua
+
+    \item Log PIB per cápita
+
+    \item Índice de Percepción de la Corrupción
+\end{itemize}
+
+\pagebreak
+\textbf{Método Delta Multivariable} \\
+
+Dado que no se ha mencionado aún, nos parece oportuno presentar el Método Delta Multivariable:\\
+
+    \begin{theorem}[Método Delta Multivariable] 
+        Sean $f$ y $g$ funciones que reciben como parámetros vectores que retornan valores escalares, la covarianza asintótica entre $f(T)$ y $g(T)$ es aproximadamente:
+        
+        $$Cov(f(T), g(T)) \approx \frac{1}{n}\sum_{j=1}^p\sum_{k=1}^p\frac{\delta f}{\delta \theta_j}\frac{\delta g}{\delta \theta_k}\sigma_{jk}$$
+    
+        De igual manera resulta necesario calcular la varianza de la función que recibe como parámetros los estadísticos
+    
+        $$Var(f(T)) \approx \frac{1}{n}\sum_{j=1}^p(\frac{\delta f}{\delta \theta_j})^2\sigma_{jk}$$
+    
+        Esto con la finalidad de calcular el coeficiente de correlación de Pearson
+    
+        $$\rho=\frac{S_{xy}}{\sqrt{S_{xx}S_{yy}}}$$
+
+    \end{theorem} 
+
+Este método nos ayudó a conseguir de manera directa los coeficientes de correlación de Pearson, mismos que se utilizaron para nuestra conclusión de cómo influyen las variables socioeconómicas de interés en nuestra variable Índice de Felicidad. Adjuntamos también la tabla con los coeficientes que arrojó nuestro investigación en la parte del análisis de datos: \\
+
+\begin{table}[H]
+    \caption{Coeficiente de correlación de Pearson}
+    \centering
+    \begin{tabular}{l|*{6}{>{\raggedleft\arraybackslash}p{1.2cm}}}
+        \hline
+        Predictor & $R^2$ & $R$ & IC Inf & IC Sup \\ \hline
+        log\_gdp\_per\_capita & 0,81 & 0,90 & 0,71 & 0,84 \\
+        electricity\_access   & 0,67 & 0,75 & 0,56 & 0,74 \\
+        water\_access & 0,71 & 0,79 & 0,60 & 0,77 \\
+        cpi & 0,72 & 0,80 & 0,61 & 0,78 \\ \hline
+    \end{tabular}
+\end{table}
+
+Inmediatamente después, utilizamos el método $Z$ de Fisher, el cual sirve para determinar los intervalos de confianza dado un coeficiente de correlación de Pearson, el cual ya se explicó el porqué se utilizó. \\
+
+\pagebreak
+
+\textbf{Transformación $Z$ de Fisher} \\
+
+La transformación $Z$ de Fisher es una fórmula que nos permite transformar el coeficiente de correlación de Pearson $r$ y convertirlo a un valor $z_r$, el cual nos va a permitir calcular un intervalo de confianza para el coeficiente de correlación de Pearson. \\
+
+De igual forma, nos parece oportuno y adecuado presentar formalmente este teorema, ya que su implementación se dio gracias al nuevo rumbo que obtuvo la investigación. \\
+
+    \begin{theorem}[Transformación $z$ de Fisher]
+        $$z_r=\frac{1}{2}ln(\frac{1+\rho}{1-\rho})=tan^{-1}(\rho)$$
+    
+        La $z_r$ es la transformación que estabiliza y normaliza la varianza, esto se puede comprobar aplicando el método delta:
+    
+        $$\frac{\delta z}{\delta \rho}=\frac{1}{1-\rho^2}$$
+    
+        Para calcular el intervalo de confianza es necesario encontrar la cota superior e inferior del log:
+    
+        $$U=z_r + \frac{z_{1-\frac{\alpha}{2}}}{\sqrt{n-3}}$$    
+    
+        $$L=z_r - \frac{z_{1-\frac{\alpha}{2}}}{\sqrt{n-3}}$$
+    
+        Una vez obtenidas las cotas, el intervalo de confianza se puede calcular de la siguiente manera:
+    
+        $$T=[\frac{e^{2L}-1}{e^{2L}+1},\frac{e^{2U}-1}{e^{2U}+1}]$$
+
+    \end{theorem}
+
+Es importante destacar que este intervalo nos otorga un rango en el cual se encuentra el verdadero coeficiente de correlación de Pearson. Recordemos que este intervalo se interpreta como ``Con una probabilidad del 95\%, nuestro parámetro va a estar dentro de este intervalo''.\\
+
+Por otro lado, uno de los objetivos principales de la investigación, era determinar la distribución que tenía la variable aleatoria Índice de Felicidad, por lo cual decidimos utilizar las Pruebas de Shapiro-Wilks en vez de las Pruebas de Kolmogorov-Smirnov, esto porque el método proporcionado por Shapiro-Wilks utiliza en su cálculo las covarianzas de las variables involucradas, razón por la cual resulta más natural escoger esta prueba estadística de normalidad, esto porque hemos estado trabajando con las covarianzas en los cálculos del coeficiente de correlación de Pearson. \\
+
+\pagebreak
+
+\textbf{Prueba Shapiro-Wilks} \\
+
+Nuevamente, procedemos a presentar y explicar cómo funciona este método, ya que conocer la teoría que hay detrás es de vital importancia y sumamente enriquecedor para generar resultados de calidad. Es importante mencionar que que a la hora de calcularlo en la investigación, utilizamos directamente las funciones de R (shapiro.test(X) con X como un vector numérico): \\
+
+A grandes razgos, este método corresponde a una prueba de normalidad, que busca determinar si un conjunto de datos sigue una distribución normal. \\
+
+    \begin{theorem}[Pruebas de Shapiro-Wilks] 
+    
+        Inicialmente se establecen dos hipótesis:
+
+        \begin{enumerate}
+            \item $H_0:$ Los datos siguen una distribución normal
+            \item $H_1:$ Los datos no siguen una distribución normal
+        \end{enumerate}
+    
+        Se calcula W, el cual mide la similitud entre los datos y una distribución normal.
+    
+        $$W = \frac{\left(\sum_{i=1}^n a_i x_{(i)}\right)^2}{\sum_{i=1}^n (x_i - \bar{x})^2}$$
+    
+        Donde $x_{(i)}$ es el $i$-ésimo valor mas pequeño de la muestra. \\
+    
+        Los coeficientes $a_i$ se definen por:
+    
+        $$(a_1, \ldots, a_n) = \frac{m^T V^{-1}}{C}$$
+    
+        donde $C$ es una norma vectorial:
+        
+        $$C = \| V^{-1} m \| = (m^T V^{-1} V^{-1} m)^{1/2}$$
+        
+        y el vector $m$:
+    
+        $$m = (m_1, \ldots, m_n)^T$$
+    
+        donde $m_i$ representa los valores medios del estadístico ordenado
+        y $V$ es la matriz de covarianzas del estadístico.
+        
+    \end{theorem}
+\pagebreak
+
+\section{Parte de reflexión}
+
+Después de haber efectuado el análisis de datos y haber aplicado las metodologías correspondientes, se tuvo que modificar considerablemente la UVE de Gowin [\ref{uve_gowin}], ya que esta inicialmente solo consideraba dos metrologías a seguir. En el camino se vio necesario recurrir a más métodos que nos permitieron acceder a los resultados deseados, estos fueron las prueba Shapiro-Wilk y la Transformación Z de Fisher, por lo que se decidió agregaralas directamente en la UVE, debido a que estas fueron de suma importancia para llegar a los resultados finales.
+
+Por otro lado, se comparó de manera detenida el rumbo que lleva actualmente el proyecto con el propuesto al inicio, y después de revisarlo, se ha llegado a la conclusión de que los objetivos y el problema planteados siguen siendo pertinentes con el rumbo de la investigación, por lo que no se considera necesario realizar ninguna modificación a estos. 
+\pagebreak
+
+\section{Fichas de literatura nuevas}
+
+\begin{table}[H]
+    \caption{Ficha de Literatura 9}
+    \begin{center}
+        \begin{tabular}{  m{3cm} | m{12cm}  }
+        \hline
+        \textbf{ Encabezado} & \textbf{Contenido }\\ 
+        \hline
+        Título: & The multivariate delta method \\ 
+        \hline
+        Autor(es): & James E. Pustejovsky \\
+        \hline
+        Año: & 2018 \\ 
+        \hline
+        Nombre del tema: & El método delta multivariado, como precursor al bootstrapping \\ 
+        \hline
+        Cronológica: & No aplica  \\ 
+        \hline
+        Metodológica: & Método delta \\  
+        \hline
+        Teórica: & Explicación teórica y profundización \\ 
+        \hline
+        Resumen en una oración: & El cálculo del método delta multivariado a partir de matrices de covarianza \\ 
+        \hline
+        Argumento central: & Lo relevante de esta fuente es la explicación centrada del método delta multivariado, y lo relaciona o ejemplifica con la correlación de Pearson y la transformación z de Fisher    \\ 
+        \hline
+        Problemas con el argumento o el tema: & El uso de esta metodología no conlleva una problemática como tal excepto en que resulte inadecuado para el proyecto, o que simplemente no calce.  \\ 
+        \hline
+        Resumen en un párrafo: & Se introduce un poco el método delta de forma multivariada, utlizando la covarianza con dos funciones dependiendo del estadístico, y al lograr resumir la covarianza para diferentes casos de independencia y casos únicos, llega también a dar el caso univariable o de un solo estadístico. Por otro lado, lo procede a aplicar con el coeficiente de correlación de Pearson, donde hace la matriz de covarianza para poder estimar la varianza del coeficiente. También lo aplica a la transformación z de Fisher, que resulta más breve.  \\ 
+        \hline
+        \end{tabular}
+    \end{center}
+\end{table}
+
+\begin{table}[H]
+    \caption{Ficha de Literatura 10}
+    \begin{center}
+        \begin{tabular}{  m{3cm} | m{12cm}  }
+        \hline
+        \textbf{ Encabezado} & \textbf{Contenido }\\ 
+        \hline
+        Título: & Métodos Cuantitativos \\ 
+        \hline
+        Autor(es): & Aleksander Dietrichson \\
+        \hline
+        Año: & 2019 \\ 
+        \hline
+        Nombre del tema: & Prueba de Shapiro-Wilks \\ 
+        \hline
+        Cronológica: & No aplica  \\ 
+        \hline
+        Metodológica: & Prueba de Shapiro-Wilks \\  
+        \hline
+        Teórica: & Explicación teórica y profundización \\ 
+        \hline
+        Resumen en una oración: & Comprobación de la hipótesis nula de que una muestra viene de una distribución normal \\ 
+        \hline
+        Argumento central: & Se establece una hipótesis nula de que la muestra proviene de una distribución normal, se toma un nivel de significanza y se busca demostrar que la muestra no corresponde a una normal\\ 
+        \hline
+        Problemas con el argumento o el tema: & El uso de esta metodología no conlleva una problemática como tal excepto en que resulte inadecuado para el proyecto, o que simplemente no calce.  \\ 
+        \hline
+        Resumen en un párrafo: & Se realiza una introducción teórica al test de Shapiro-Wilks, seguido de esto se procede a definir las hipótesis, $H_0:$ distribución normal, $H_1:$ no distribución normal, se establece un nivel de significanza de $0.05$. Seguido de esto se realiza el test, con lo cual se obtiene como resultado que el valor obtenido de $p$ es superior al nivel de significanza, por lo cual no se rechaza la hipótesis nula.  \\ 
+        \hline
+        \end{tabular}
+    \end{center}
+\end{table}
+
+\begin{table}[H]
+    \caption{Ficha de Literatura 11}
+    \begin{center}
+        \begin{tabular}{  m{3cm} | m{12cm}  }
+        \hline
+        \textbf{ Encabezado} & \textbf{Contenido }\\ 
+        \hline
+        Título: & Fisher Z-Transformation: Definition \& Example \\ 
+        \hline
+        Autor(es): & Zach Bobbitt \\
+        \hline
+        Año: & 2022 \\ 
+        \hline
+        Nombre del tema: & Transformación Z de Fisher \\ 
+        \hline
+        Cronológica: & No aplica  \\ 
+        \hline
+        Metodológica: & Transformación Z de Fisher \\  
+        \hline
+        Teórica: & Explicación teórica y profundización \\ 
+        \hline
+        Resumen en una oración: & Cálculo de Intervalos de Confianza para el coeficiente de correlación de Pearson \\ 
+        \hline
+        Argumento central: & Lo relevante de esta fuente es la explicación centrada en la transformación Z de Fisher que permite obtener Intervalos de Confianza para el coeficiente de correlación lineal de Pearson. \\ 
+        \hline
+        Problemas con el argumento o el tema: & El uso de esta metodología no conlleva una problemática como tal excepto en que resulte inadecuado para el proyecto, o que simplemente no calce.  \\ 
+        \hline
+        Resumen en un párrafo: & Se realiza una introducción acerca del uso que presenta el método, a su vez realiza un ejemplo aplicado. Inicialmente establece la variable $z_r$ que corresponde a utilizar el tangente para realizar una transformación de la covarianza $\rho$ obtenida mediante el método delta multivariado. Este valor es utilizado para establecer cotas logarítmicas superiores e inferiores, las cotas obtenidas son utilizadas para calcular los limites del Intervalo de Confianza 
+        \\ 
+        \hline
+        \end{tabular}
+    \end{center}
+\end{table}

@@ -1,30 +1,47 @@
 \documentclass[12pt,oneside,letterpaper,spanish]{report}
-
-\input{root/packages}
-\input{root/page_settings}
-
-
-
+\usepackage[utf8]{inputenc}
+\usepackage[T1]{fontenc}
+\usepackage{csquotes}
+\usepackage[margin=2.25cm,headheight=26pt,includeheadfoot]{geometry}
+\usepackage[spanish]{babel}
 \usepackage{listings}
+\usepackage{color}
+\usepackage[pagestyles]{titlesec}
+\usepackage{titling}
+\usepackage[framed, numbered]{matlab-prettifier}
+\usepackage{changepage}
+\usepackage{amsmath}
+\usepackage{enumitem}
+\usepackage{graphicx}
+\usepackage{fancyhdr}
+\usepackage{lastpage}
+\usepackage{caption}
+\usepackage{tocloft}
+\usepackage{setspace}
+\usepackage{multirow}
+\usepackage{float}
+\usepackage{comment}
+\usepackage{booktabs}
+\usepackage{indentfirst}
+\usepackage{lscape}
+\usepackage{booktabs,caption}
+\usepackage[flushleft]{threeparttable}
+\usepackage[english]{nomencl}
+\usepackage{xcolor}
+\usepackage{lipsum}
+\usepackage{array}
+\usepackage{natbib}
+\usepackage{tikz}
+\usepackage[hidelinks]{hyperref}
+\usepackage{amsthm}
+\usepackage{amssymb}
+\usepackage{tcolorbox}
+\usepackage{listings}
+\usepackage{multicol}
+\usepackage{footnote}
+\usepackage{array}
 
-
-\lstdefinestyle{mystyle}{
-    language=R,
-    basicstyle=\small\ttfamily,
-    breaklines=true,
-    keywordstyle=\color{blue},
-    commentstyle=\color{green!40!black},
-    stringstyle=\color{red},
-    numbers=left,
-    numberstyle=\tiny,
-    frame=single,
-    backgroundcolor=\color{gray!10},
-    captionpos=b,
-    showstringspaces=false,
-}
-
-\lstset{style=mystyle}
-
+\input{root/page_settings}
 
 % -------------------------------
 % --- Acá inicia el documento ---
@@ -50,12 +67,13 @@
 \input{bitacora1}
 % --- Bitácora 2 ---
 \input{bitacora2}
+% --- Bitácora 3 ---
+\input{bitacora3}
 
 %
 % --- Acá termina el texto ---
 %
 \label{EndOfText}
-
 \newpage
 \pagenumbering{Roman}
 \fancyfoot[C]{Page \thepage\ of \pageref{endOfDoc}}
@@ -69,15 +87,28 @@
 % \listoftables
 % \thispagestyle{fancy}
 
-\addcontentsline{toc}{section}{Referencias}
+\addcontentsline{toc}{chapter}{Referencias}
 \nocite{*}
 \bibliographystyle{apalike}
 \bibliography{refs} 
 \thispagestyle{fancy}
 
-% --- Correcciones bitácora 1 ---
+\chapter{Anexos}
+
+% --- Enlace repositorio GitHub --- 
+\section{Repositorio de GitHub} \label{github}
+Se adjunta el enlace al repositorio de GitHub de forma explícita en caso de no funcionar el hipervínculo: \url{https://github.com/bluke7ide/Proyecto_Estadistica}
+
+
+% --- Apéndices ---
 \chapter{Apéndices} \label{Apendices}
-\input{correciones1}
+
+% --- Correcciones bitácora 1 ---
+\input{correcciones1}
+\newpage
+
+% --- Correcciones bitácora 2---
+\input{correcciones2}
 
 % --------------------------------
 % --- Acá termina el documento ---
