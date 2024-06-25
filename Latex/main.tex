@@ -35,11 +35,13 @@
 \usepackage[hidelinks]{hyperref}
 \usepackage{amsthm}
 \usepackage{amssymb}
+\usepackage{amsfonts}
 \usepackage{tcolorbox}
 \usepackage{listings}
 \usepackage{multicol}
 \usepackage{footnote}
 \usepackage{array}
+%\usepackage{refcheck}
 
 \input{root/page_settings}
 
@@ -69,6 +71,8 @@
 \input{bitacora2}
 % --- Bitácora 3 ---
 \input{bitacora3}
+% --- Bitácora 4 ---
+\input{bitacora4}
 
 %
 % --- Acá termina el texto ---
@@ -87,7 +91,7 @@
 % \listoftables
 % \thispagestyle{fancy}
 
-\addcontentsline{toc}{chapter}{Referencias}
+\addcontentsline{toc}{chapter}{Referencias} \label{referencias}
 \nocite{*}
 \bibliographystyle{apalike}
 \bibliography{refs} 
@@ -109,6 +113,10 @@ Se adjunta el enlace al repositorio de GitHub de forma explícita en caso de no 
 
 % --- Correcciones bitácora 2---
 \input{correcciones2}
+\newpage
+
+% --- Correcciones bitácora 3---
+\input{correcciones3}
 
 % --------------------------------
 % --- Acá termina el documento ---
