@@ -134,7 +134,7 @@ summary(Tabla_Felicidad)
 Se guarda el desc brevemente de la base de datos conjunta
 ```{r}
 write.xlsx(descr(World_Data_3),
-           "docs/Estadisticas_Descriptivas.xlsx", rowNames = TRUE)
+           "res/Estadisticas_Descriptivas.xlsx", rowNames = TRUE)
 ```
 
 Y un summary breve después de la modificación de la base de datos
@@ -146,11 +146,11 @@ summary(Data_trabajar)
 Con la data estructurada de la forma adecuada, podemos empezamos a buscar la relación existente entre los distintos marcadores con respecto a nuestro variable objetivo, en este caso "life_ladder". De la matriz de covarianza, podemos encontrar que tanta relación existe entre las distintas variables que forman la tabla, de forma que va a ser mas sencillo visualizar en que variables concentrar el estudio. Así como la de correlación, ya que al estar normalizada con valores que van desde -1 hasta 1, resulta mas sencilla observar las relaciones existentes. También se imprime el plot de correlaciones, ya que las dimensiones de Látex limitan la posibilidad de utilizar la matriz numérica.
 ```{r, message=FALSE, warning=FALSE, echo=FALSE}
 write.xlsx(as.data.frame(cov(Data_trabajar)),
-           "docs/Covarianza.xlsx", rowNames = TRUE)
+           "res/Covarianza.xlsx", rowNames = TRUE)
 write.xlsx(as.data.frame(cor(Data_trabajar)),
-           "docs/Correlacion.xlsx", rowNames = TRUE)
+           "res/Correlacion.xlsx", rowNames = TRUE)
 
-pdf("docs/primeros_graficos/correlaciones.pdf") 
+pdf("res/primeros_graficos/correlaciones.pdf") 
 corrplot(cor(Data_trabajar), method = "circle", tl.cex = 0.5)
 dev.off()
 
@@ -201,8 +201,8 @@ print(log_gdp_table)
 ```
 Y las guardamos
 ```{r}
-write.xlsx(life_ladder_table, "docs/life_ladder_table.xlsx", rowNames = TRUE)
-write.xlsx(log_gdp_table, "docs/log_gdp_table.xlsx", rowNames = TRUE)
+write.xlsx(life_ladder_table, "res/life_ladder_table.xlsx", rowNames = TRUE)
+write.xlsx(log_gdp_table, "res/log_gdp_table.xlsx", rowNames = TRUE)
 ```
 
 
@@ -321,12 +321,12 @@ plots[[4]] %>% ggplotly()
 plots[[5]] 
 plots[[6]] 
 
-ggsave("docs/segundos_graficos/life_ladder.pdf", plot = plots[[1]])
-ggsave("docs/segundos_graficos/elec_life.pdf", plot = plots[[2]])
-ggsave("docs/segundos_graficos/water_life.pdf", plot = plots[[3]])
-ggsave("docs/segundos_graficos/income_life.pdf", plot = plots[[4]])
-ggsave("docs/segundos_graficos/cpi_life.pdf", plot = plots[[5]])
-ggsave("docs/segundos_graficos/lgdp_life.pdf", plot = plots[[6]])
+ggsave("res/segundos_graficos/life_ladder.pdf", plot = plots[[1]])
+ggsave("res/segundos_graficos/elec_life.pdf", plot = plots[[2]])
+ggsave("res/segundos_graficos/water_life.pdf", plot = plots[[3]])
+ggsave("res/segundos_graficos/income_life.pdf", plot = plots[[4]])
+ggsave("res/segundos_graficos/cpi_life.pdf", plot = plots[[5]])
+ggsave("res/segundos_graficos/lgdp_life.pdf", plot = plots[[6]])
 ```
 
 Con valores de p inferiores al 0.05 en todos los casos se acepta la hipótesis de que existe una correlación positiva entre los distintos marcadores del progreso socioeconómico (1) log_gdp_per_capita, (2) electricity_access, (3) water_access, (4) cpi, con respecto a la variable de estudio life_ladder
@@ -369,8 +369,8 @@ qqplots_b <- ggqqplot(Data_relevante$log_gdp_per_capita,
 qqplots_a %>% ggplotly()
 qqplots_b %>% ggplotly()
 
-ggsave("docs/terceros_graficos/qqp_life.pdf", plot = qqplots_a, limitsize = FALSE)
-ggsave("docs/terceros_graficos/qqp_lgdp.pdf", plot = qqplots_b, limitsize = FALSE)
+ggsave("res/terceros_graficos/qqp_life.pdf", plot = qqplots_a, limitsize = FALSE)
+ggsave("res/terceros_graficos/qqp_lgdp.pdf", plot = qqplots_b, limitsize = FALSE)
 ```
 
 En los gráficos se puede apreciar la forma en la que se distribuye las distribuciones y su relación con una distribución normal
